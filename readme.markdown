@@ -3,7 +3,7 @@
 
 ## Usage
 
- If you use this program as module, this program provides  `export_img(in_filename, out_filename)` function.
+ If you use this program as module, this program provides  `visio2img.visio2img.export_img(in_filename, out_filename)` function.
  Assume that format of `in_filename` is vsd and format of `out_filename` is general image file name(format is judged from extension).
  
  For using command, Usage of this program is
