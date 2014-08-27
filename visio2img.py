@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import win32com.client
 from win32com.client import constants
 from os import path, chdir, getcwd
@@ -5,6 +7,7 @@ from os import path, chdir, getcwd
 from sys import exit
 from optparse import OptionParser
 
+__all__ = ['export_img']
 
 def get_dispatch_format(extension):
     if extension == 'vsd':
