@@ -21,30 +21,11 @@ def get_pages(app, page_num=None):
     """
     pages = app.ActiveDocument.Pages
     return [list(pages)[page_num - 1]] if page_num else pages
-    
 
-if __name__ == '__main__':
-    # define parser
-    parser = OptionParser()
-    parser.add_option(
-            '-p', '--page',
-            action='store',
-            type='int',
-            dest='page',
-            help='transform only one page(set number of this page)'
-        )
-    (options, argv) = parser.parse_args()
-    
-    
-    # if len(arguments) != 2, raise exception
-    if len(argv) != 2:
-        print('Enter Only input_filename and output_filename')
-        exit()
-    
-    # define input_filename and output_filename
-    in_filename = path.abspath(argv[0])
-    out_filename = path.abspath(argv[1])
-
+def export_img(in_filename, out_filename, page_num=None):
+    """
+    export as image format
+    """
     # define filename without extension and extension variable
     in_filename_without_extension, in_extension = path.splitext(in_filename)
     out_filename_without_extension, out_extension = path.splitext(out_filename)
@@ -73,7 +54,32 @@ if __name__ == '__main__':
         # Export pages
         for page, page_name in zip(pages, page_names):
             page.Export(page_name)
-            print(type(page))
 
     finally:
         application.Quit()
+
+    
+
+if __name__ == '__main__':
+    # define parser
+    parser = OptionParser()
+    parser.add_option(
+            '-p', '--page',
+            action='store',
+            type='int',
+            dest='page',
+            help='transform only one page(set number of this page)'
+        )
+    (options, argv) = parser.parse_args()
+    
+    
+    # if len(arguments) != 2, raise exception
+    if len(argv) != 2:
+        print('Enter Only input_filename and output_filename')
+        exit()
+    
+    # define input_filename and output_filename
+    in_filename = path.abspath(argv[0])
+    out_filename = path.abspath(argv[1])
+    
+    export_img(in_filename, out_filename, options.page)
