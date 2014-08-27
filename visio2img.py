@@ -1,7 +1,8 @@
 import win32com.client
 from win32com.client import constants
 from os import path, chdir, getcwd
-from sys import argv, exit
+from sys import exit
+from optparse import OptionParser
 
 
 def get_dispatch_format(extension):
@@ -9,16 +10,39 @@ def get_dispatch_format(extension):
         return 'Visio.Application'
     if extension == 'vsdx':
         pass    # What?
+
+def get_pages(app, page_num=None):
+    """
+    app -> page
+    if page_num is None, return all pages.
+    if page_num is int object, return path_num-th page(fromm 1).
+    """
+    pages = app.ActiveDocument.Pages
+    return [list(pages)[page_num - 1]] if page_num else pages
     
 
 if __name__ == '__main__':
+    # define parser
+    parser = OptionParser()
+    parser.add_option(
+            '-p', '--page',
+            action='store',
+            type='int',
+            dest='page',
+            help='transform only one page(set number of this page)'
+        )
+    (options, argv) = parser.parse_args()
+    print(options)
+    print(argv)
+    
+    
     # if len(arguments) != 2, raise exception
-    if len(argv) != 3:
+    if len(argv) != 2:
         print('Enter Only input_filename and output_filename')
     
     # define input_filename and output_filename
-    in_filename = path.abspath(argv[1])
-    out_filename = path.abspath(argv[2])
+    in_filename = path.abspath(argv[0])
+    out_filename = path.abspath(argv[1])
 
     # define filename without extension and extension variable
     in_filename_without_extension, in_extension = path.splitext(in_filename)
@@ -36,7 +60,8 @@ if __name__ == '__main__':
         document = application.Documents.Open(in_filename)
 
         # make pages of picture
-        pages = application.ActiveDocument.Pages
+        print(dir(parser))
+        pages = get_pages(application, page_num=options.page)
 
         # define page_names
         if len(pages) == 1:
