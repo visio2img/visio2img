@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
         # define page_names
         if len(pages) == 1:
-            page_names = [out_filename_without_extension + '.png']
+            page_names = [out_filename]
         else:   # len(pages) >= 2
             page_names = (out_filename_without_extension + str(page_cnt + 1) + '.png'
                     for page_cnt in range(0, len(pages)))
