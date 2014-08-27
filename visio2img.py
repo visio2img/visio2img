@@ -8,9 +8,9 @@ from optparse import OptionParser
 
 def get_dispatch_format(extension):
     if extension == 'vsd':
-        return 'Visio.Application'
+        return 'Visio.InvisibleApp'
     if extension == 'vsdx':
-        pass    # What?
+        pass    # pass
 
 
 def get_pages(app, page_num=None):
@@ -34,13 +34,12 @@ if __name__ == '__main__':
             help='transform only one page(set number of this page)'
         )
     (options, argv) = parser.parse_args()
-    print(options)
-    print(argv)
     
     
     # if len(arguments) != 2, raise exception
     if len(argv) != 2:
         print('Enter Only input_filename and output_filename')
+        exit()
     
     # define input_filename and output_filename
     in_filename = path.abspath(argv[0])
@@ -62,19 +61,19 @@ if __name__ == '__main__':
         document = application.Documents.Open(in_filename)
 
         # make pages of picture
-        print(dir(parser))
         pages = get_pages(application, page_num=options.page)
 
         # define page_names
         if len(pages) == 1:
             page_names = [out_filename]
         else:   # len(pages) >= 2
-            page_names = (out_filename_without_extension + str(page_cnt + 1) + '.png'
+            page_names = (out_filename_without_extension + str(page_cnt + 1) + out_extension
                     for page_cnt in range(0, len(pages)))
 
         # Export pages
         for page, page_name in zip(pages, page_names):
             page.Export(page_name)
+            print(type(page))
 
     finally:
         application.Quit()
