@@ -10,17 +10,14 @@ from optparse import OptionParser
 __all__ = ['export_img']
 
 def get_dispatch_format(extension):
-    if extension == 'vsd':
-        return 'Visio.InvisibleApp'
-    if extension == 'vsdx':
-        pass    # pass
+    return 'Visio.InvisibleApp' # vsd format
 
 
 def get_pages(app, page_num=None):
     """
     app -> page
     if page_num is None, return all pages.
-    if page_num is int object, return path_num-th page(fromm 1).
+    if page_num is int object, return path_num-th page(from 1).
     """
     pages = app.ActiveDocument.Pages
     return [list(pages)[page_num - 1]] if page_num else pages
@@ -52,7 +49,7 @@ def export_img(in_filename, out_filename, page_num=None):
             page_names = [out_filename]
         else:   # len(pages) >= 2
             page_names = (out_filename_without_extension + str(page_cnt + 1) + out_extension
-                    for page_cnt in range(0, len(pages)))
+                    for page_cnt in range(len(pages)))
 
         # Export pages
         for page, page_name in zip(pages, page_names):
