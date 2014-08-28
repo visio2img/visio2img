@@ -12,7 +12,10 @@ from pywintypes import com_error
 from os import path, chdir, getcwd
 from optparse import OptionParser
 
-__all__ = ['export_img']
+__all__ = ('export_img')
+
+GEN_IMG_FORMATS = ('.gif', '.jpeg', '.jpg', '.png')
+VISIO_FORMATS   = ('.vsd',)
 
 class IllegalImageFormatException(TypeError):
     """
@@ -40,14 +43,14 @@ def _get_pages(app, page_num=None):
 def _check_format(visio_filename, gen_img_filename):
     visio_extension = path.splitext(visio_filename)[1]
     gen_img_extension = path.splitext(gen_img_filename)[1]
-    if visio_extension not in ('.vsd'):
+    if visio_extension not in VISIO_FORMATS:
         err_str = (
                 'Input filename is not llegal for visio file. \n' 
                 'This program is suppert only vsd extension.'
                 )
         raise IllegalImageFormatException(err_str)
 
-    if gen_img_extension not in ('.gif', '.jpg', '.jpeg', '.png'):
+    if gen_img_extension not in GEN_IMG_FORMATS:
                 err_str = (
                 'Output filename is not llegal for visio file. \n' 
                 'This program is suppert gif, jpeg, png extension.'
