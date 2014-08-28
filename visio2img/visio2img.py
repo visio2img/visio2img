@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 
-import win32com.client
-from pywintypes import com_error
-from win32com.client import constants
-from os import path, chdir, getcwd
-
 from sys import exit, stderr
+try:
+    import win32com.client
+    from win32com.client import constants
+except ImportError as err:
+    stderr.write('win32com module not found')
+    exit()
+
+from pywintypes import com_error
+from os import path, chdir, getcwd
 from optparse import OptionParser
 
 __all__ = ['export_img']
@@ -33,18 +37,9 @@ def get_pages(app, page_num=None):
     pages = app.ActiveDocument.Pages
     return [list(pages)[page_num - 1]] if page_num else pages
 
-def export_img(in_filename, out_filename, page_num=None):
-    """
-    export as image format
-    """
-    # to absolute path
-    in_filename = path.abspath(in_filename)
-    out_filename = path.abspath(out_filename)
-    
-    # define filename without extension and extension variable
-    in_filename_without_extension, _ = path.splitext(in_filename)
-    out_filename_without_extension, out_extension = path.splitext(out_filename)
-
+def check_format(in_filename, out_filename):
+    in_extension = path.splitext(in_filename)[1]
+    out_extension = path.splitext(out_filename)[1]
     if in_extension not in ('.vsd'):
         err_str = (
                 'Input filename is not llegal for visio file. \n' 
@@ -59,13 +54,37 @@ def export_img(in_filename, out_filename, page_num=None):
                 )
                 raise IllegalImageFormatException(err_str)
 
+
+def export_img(in_filename, out_filename, page_num=None):
+    """
+    export as image format
+    """
+    # to absolute path
+    in_filename = path.abspath(in_filename)
+    out_filename = path.abspath(out_filename)
+    
+    # define filename without extension and extension variable
+    out_filename_without_extension, out_extension = path.splitext(out_filename)
+
+    check_format(in_filename, out_filename)
+
     # if file is not found, exit from program
     if not path.exists(in_filename):
         raise FileNotFoundError('Input File is not found.')
 
+    out_dir_name = out_filename[:0 - len(path.basename(out_filename))]
+    if not path.isdir(out_dir_name):
+        raise FileNotFoundError('Directory of Output File is not found')
+
     try:
         # make instance for visio
+        _, in_extension = path.splitext(in_filename)
         application = win32com.client.Dispatch(get_dispatch_format(in_extension[1:]))
+
+        # case: system has no visio
+        if application is None:
+            raise VisioNotFoundException('System has no Visio.')
+
         application.Visible = False
         document = application.Documents.Open(in_filename)
 
@@ -122,4 +141,5 @@ if __name__ == '__main__':
                 # expected exception
         print(str(err)) # print message
     except Exception as err:
-        print(err.__traceback__)      # TraceBack Information
+        print('Error')
+        print(err)
