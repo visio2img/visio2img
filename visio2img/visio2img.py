@@ -11,6 +11,7 @@ except ImportError as err:
 from pywintypes import com_error
 from os import path, chdir, getcwd
 from optparse import OptionParser
+from math import log
 
 __all__ = ('export_img')
 
@@ -108,14 +109,14 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
             pages = list(filter(
                         lambda p: page_dict[page] ==  page_name,
                         pages))
-        
 
         # define page_names
         if len(pages) == 1:
             page_names = [gen_img_filename]
         else:   # len(pages) >= 2
             _, visio_extension = path.splitext(visio_filename)
-            page_names = (gen_img_filename_without_extension + str(page_cnt + 1) + gen_img_extension
+            figure_length = int(log(len(pages), 10)) + 1
+            page_names = (gen_img_filename_without_extension + ("{0:0>" + str(figure_length) + "}").format(page_cnt) + gen_img_extension
                     for page_cnt in range(len(pages)))
 
         # Export pages
@@ -164,5 +165,7 @@ if __name__ == '__main__':
     except (FileNotFoundError, IllegalImageFormatException, IndexError) as err:
                 # expected exception
         stderr.write(str(err)) # print message
+        """
     except Exception as err:
         print('Error')
+    """
