@@ -37,17 +37,17 @@ def get_pages(app, page_num=None):
     pages = app.ActiveDocument.Pages
     return [list(pages)[page_num - 1]] if page_num else pages
 
-def check_format(in_filename, out_filename):
-    in_extension = path.splitext(in_filename)[1]
-    out_extension = path.splitext(out_filename)[1]
-    if in_extension not in ('.vsd'):
+def check_format(visio_filename, gen_img_filename):
+    visio_extension = path.splitext(visio_filename)[1]
+    gen_img_extension = path.splitext(gen_img_filename)[1]
+    if visio_extension not in ('.vsd'):
         err_str = (
                 'Input filename is not llegal for visio file. \n' 
                 'This program is suppert only vsd extension.'
                 )
         raise IllegalImageFormatException(err_str)
 
-    if out_extension not in ('.gif', '.jpg', '.jpeg', '.png'):
+    if gen_img_extension not in ('.gif', '.jpg', '.jpeg', '.png'):
                 err_str = (
                 'Output filename is not llegal for visio file. \n' 
                 'This program is suppert gif, jpeg, png extension.'
@@ -55,38 +55,38 @@ def check_format(in_filename, out_filename):
                 raise IllegalImageFormatException(err_str)
 
 
-def export_img(in_filename, out_filename, page_num=None, page_name=None):
+def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
     """
     export as image format
     """
     # to absolute path
-    in_filename = path.abspath(in_filename)
-    out_filename = path.abspath(out_filename)
+    visio_filename = path.abspath(visio_filename)
+    gen_img_filename = path.abspath(gen_img_filename)
     
     # define filename without extension and extension variable
-    out_filename_without_extension, out_extension = path.splitext(out_filename)
+    gen_img_filename_without_extension, gen_img_extension = path.splitext(gen_img_filename)
 
-    check_format(in_filename, out_filename)
+    check_format(visio_filename, gen_img_filename)
 
     # if file is not found, exit from program
-    if not path.exists(in_filename):
+    if not path.exists(visio_filename):
         raise FileNotFoundError('Input File is not found.')
 
-    out_dir_name = out_filename[:0 - len(path.basename(out_filename))]
-    if not path.isdir(out_dir_name):
+    gen_img_dir_name = gen_img_filename[:-len(path.basename(gen_img_filename))]
+    if not path.isdir(gen_img_dir_name):
         raise FileNotFoundError('Directory of Output File is not found')
 
     try:
         # make instance for visio
-        _, in_extension = path.splitext(in_filename)
-        application = win32com.client.Dispatch(get_dispatch_format(in_extension[1:]))
+        _, visio_extension = path.splitext(visio_filename)
+        application = win32com.client.Dispatch(get_dispatch_format(visio_extension[1:]))
 
         # case: system has no visio
         if application is None:
             raise VisioNotFoundException('System has no Visio.')
 
         application.Visible = False
-        document = application.Documents.Open(in_filename)
+        document = application.Documents.Open(visio_filename)
 
         # case: system has no visio
         if application is None:
@@ -106,10 +106,10 @@ def export_img(in_filename, out_filename, page_num=None, page_name=None):
 
         # define page_names
         if len(pages) == 1:
-            page_names = [out_filename]
+            page_names = [gen_img_filename]
         else:   # len(pages) >= 2
-            _, in_extension = path.splitext(in_filename)
-            page_names = (out_filename_without_extension + str(page_cnt + 1) + out_extension
+            _, visio_extension = path.splitext(visio_filename)
+            page_names = (gen_img_filename_without_extension + str(page_cnt + 1) + gen_img_extension
                     for page_cnt in range(len(pages)))
 
         # Export pages
@@ -149,16 +149,18 @@ if __name__ == '__main__':
         exit()
     
     # define input_filename and output_filename
-    in_filename = argv[0]
-    out_filename = argv[1]
+    visio_filename = argv[0]
+    gen_img_filename = argv[1]
 
     try:
-        export_img(in_filename, out_filename,
+        export_img(visio_filename, gen_img_filename,
                            page_num=options.page,
                            page_name=options.page_name)
     except (FileNotFoundError, IllegalImageFormatException) as err:
                 # expected exception
         print(str(err)) # print message
+        """
     except Exception as err:
         print('Error')
         print(err)
+        """
