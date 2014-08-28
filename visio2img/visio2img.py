@@ -55,7 +55,7 @@ def check_format(in_filename, out_filename):
                 raise IllegalImageFormatException(err_str)
 
 
-def export_img(in_filename, out_filename, page_num=None):
+def export_img(in_filename, out_filename, page_num=None, page_name=None):
     """
     export as image format
     """
@@ -95,6 +95,15 @@ def export_img(in_filename, out_filename, page_num=None):
         # make pages of picture
         pages = get_pages(application, page_num=options.page)
 
+        ## filter of page names
+        if page_name is not None:
+            # dictionary of page to page.names
+            page_dict = dict(zip(pages, pages.GetNames()))
+            pages = list(filter(
+                        lambda p: page_dict[page] ==  page_name,
+                        pages))
+        
+
         # define page_names
         if len(pages) == 1:
             page_names = [out_filename]
@@ -107,6 +116,7 @@ def export_img(in_filename, out_filename, page_num=None):
         for page, page_name in zip(pages, page_names):
             page.Export(page_name)
     except com_error as err:
+        print(err)
         raise IllegalImageFormatException('Output filename is not llegal for Image File.')
     finally:
         application.Quit()
@@ -123,6 +133,13 @@ if __name__ == '__main__':
             dest='page',
             help='transform only one page(set number of this page)'
         )
+    parser.add_option(
+            '-n', '--name',
+            action='store',
+            type='string',
+            dest='page_name',
+            help='transform only same as setted name page'
+        )
     (options, argv) = parser.parse_args()
     
     
@@ -136,7 +153,9 @@ if __name__ == '__main__':
     out_filename = argv[1]
 
     try:
-        export_img(in_filename, out_filename, options.page)
+        export_img(in_filename, out_filename,
+                           page_num=options.page,
+                           page_name=options.page_name)
     except (FileNotFoundError, IllegalImageFormatException) as err:
                 # expected exception
         print(str(err)) # print message
