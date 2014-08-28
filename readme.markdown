@@ -43,3 +43,4 @@ for translate only first page.
 ## Known Problems
 
 * A white screen appears for an instant.
+* Only vsd: This program now support only vsd, little old format.
