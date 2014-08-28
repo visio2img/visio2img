@@ -162,7 +162,5 @@ if __name__ == '__main__':
     except (FileNotFoundError, IllegalImageFormatException) as err:
                 # expected exception
         stderr.write(str(err)) # print message
-        """
     except Exception as err:
         print('Error')
-        """
