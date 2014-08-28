@@ -11,6 +11,7 @@ except ImportError as err:
 from pywintypes import com_error
 from os import path, chdir, getcwd
 from optparse import OptionParser
+from math import log
 
 __all__ = ('export_img')
 
@@ -38,7 +39,10 @@ def _get_pages(app, page_num=None):
     if page_num is int object, return path_num-th page(from 1).
     """
     pages = app.ActiveDocument.Pages
-    return [list(pages)[page_num - 1]] if page_num else pages
+    try:
+        return [list(pages)[page_num - 1]] if page_num else pages
+    except IndexError as err:
+        raise IndexError('This file has no {}-th page.'.format(page_num))
 
 def _check_format(visio_filename, gen_img_filename):
     visio_extension = path.splitext(visio_filename)[1]
@@ -105,21 +109,20 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
             pages = list(filter(
                         lambda p: page_dict[page] ==  page_name,
                         pages))
-        
 
         # define page_names
         if len(pages) == 1:
             page_names = [gen_img_filename]
         else:   # len(pages) >= 2
             _, visio_extension = path.splitext(visio_filename)
-            page_names = (gen_img_filename_without_extension + str(page_cnt + 1) + gen_img_extension
+            figure_length = int(log(len(pages), 10)) + 1
+            page_names = (gen_img_filename_without_extension + ("{0:0>" + str(figure_length) + "}").format(page_cnt) + gen_img_extension
                     for page_cnt in range(len(pages)))
 
         # Export pages
         for page, page_name in zip(pages, page_names):
             page.Export(page_name)
     except com_error as err:
-        print(err)
         raise IllegalImageFormatException('Output filename is not llegal for Image File.')
     finally:
         application.Quit()
@@ -159,8 +162,10 @@ if __name__ == '__main__':
         export_img(visio_filename, gen_img_filename,
                            page_num=options.page,
                            page_name=options.page_name)
-    except (FileNotFoundError, IllegalImageFormatException) as err:
+    except (FileNotFoundError, IllegalImageFormatException, IndexError) as err:
                 # expected exception
         stderr.write(str(err)) # print message
+        """
     except Exception as err:
         print('Error')
+    """
