@@ -15,6 +15,11 @@ class IllegalImageFormatException(TypeError):
     This exception means Exceptions for Illegal Image Format.
     """
 
+class VisioNotFound(Exception):
+    """
+    This excetion means system has no visio program.
+    """
+
 def get_dispatch_format(extension):
     return 'Visio.InvisibleApp' # vsd format
 
@@ -37,7 +42,7 @@ def export_img(in_filename, out_filename, page_num=None):
     out_filename = path.abspath(out_filename)
     
     # define filename without extension and extension variable
-    in_filename_without_extension, in_extension = path.splitext(in_filename)
+    in_filename_without_extension, _ = path.splitext(in_filename)
     out_filename_without_extension, out_extension = path.splitext(out_filename)
 
     if in_extension not in ('.vsd'):
@@ -64,6 +69,10 @@ def export_img(in_filename, out_filename, page_num=None):
         application.Visible = False
         document = application.Documents.Open(in_filename)
 
+        # case: system has no visio
+        if application is None:
+            raise VisioNotFoundException('Visio Not Found in your system')
+
         # make pages of picture
         pages = get_pages(application, page_num=options.page)
 
@@ -71,6 +80,7 @@ def export_img(in_filename, out_filename, page_num=None):
         if len(pages) == 1:
             page_names = [out_filename]
         else:   # len(pages) >= 2
+            _, in_extension = path.splitext(in_filename)
             page_names = (out_filename_without_extension + str(page_cnt + 1) + out_extension
                     for page_cnt in range(len(pages)))
 
