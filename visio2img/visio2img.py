@@ -24,11 +24,11 @@ class VisioNotFound(Exception):
     This excetion means system has no visio program.
     """
 
-def get_dispatch_format(extension):
+def _get_dispatch_format(extension):
     return 'Visio.InvisibleApp' # vsd format
 
 
-def get_pages(app, page_num=None):
+def _get_pages(app, page_num=None):
     """
     app -> page
     if page_num is None, return all pages.
@@ -37,7 +37,7 @@ def get_pages(app, page_num=None):
     pages = app.ActiveDocument.Pages
     return [list(pages)[page_num - 1]] if page_num else pages
 
-def check_format(visio_filename, gen_img_filename):
+def _check_format(visio_filename, gen_img_filename):
     visio_extension = path.splitext(visio_filename)[1]
     gen_img_extension = path.splitext(gen_img_filename)[1]
     if visio_extension not in ('.vsd'):
@@ -66,7 +66,7 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
     # define filename without extension and extension variable
     gen_img_filename_without_extension, gen_img_extension = path.splitext(gen_img_filename)
 
-    check_format(visio_filename, gen_img_filename)
+    _check_format(visio_filename, gen_img_filename)
 
     # if file is not found, exit from program
     if not path.exists(visio_filename):
@@ -79,7 +79,7 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
     try:
         # make instance for visio
         _, visio_extension = path.splitext(visio_filename)
-        application = win32com.client.Dispatch(get_dispatch_format(visio_extension[1:]))
+        application = win32com.client.Dispatch(_get_dispatch_format(visio_extension[1:]))
 
         # case: system has no visio
         if application is None:
@@ -93,7 +93,7 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
             raise VisioNotFoundException('Visio Not Found in your system')
 
         # make pages of picture
-        pages = get_pages(application, page_num=options.page)
+        pages = _get_pages(application, page_num=options.page)
 
         ## filter of page names
         if page_name is not None:
@@ -158,9 +158,8 @@ if __name__ == '__main__':
                            page_name=options.page_name)
     except (FileNotFoundError, IllegalImageFormatException) as err:
                 # expected exception
-        print(str(err)) # print message
+        stderr.write(str(err)) # print message
         """
     except Exception as err:
         print('Error')
-        print(err)
         """
