@@ -116,7 +116,7 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
         else:   # len(pages) >= 2
             _, visio_extension = path.splitext(visio_filename)
             figure_length = int(log(len(pages), 10)) + 1
-            page_names = (gen_img_filename_without_extension + ("{0:0>" + str(figure_length) + "}").format(page_cnt) + gen_img_extension
+            page_names = (gen_img_filename_without_extension + ("{0:0>" + str(figure_length) + "}").format(page_cnt + 1) + gen_img_extension
                     for page_cnt in range(len(pages)))
 
         # Export pages
@@ -127,7 +127,10 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
     finally:
         application.Quit()
 
-    
+
+def main(*filenames, **kwg):
+    visio_filename, gen_img_filename = filenames
+    export_img(filenames, **kwg)
 
 if __name__ == '__main__':
     # define parser
