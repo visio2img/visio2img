@@ -29,7 +29,10 @@ visio2img.py 3pages.vsd named.jpg
 	
 ## Options
 
- Now, The optional number has only one.
+ Now, The optional number has only two.
+ 
+### Page option
+ 
 This is `-p` or `--page` option.
 This is used for appointing a page number of visio file. 
 For example
@@ -39,6 +42,16 @@ visio2img.py in.vsd out.jpg -p 1
 ```
 
 for translate only first page.
+
+### Name Option
+
+This is `-n` or `--name` option.
+This is used for appointing a page name of visio file.
+
+```
+visio2img.py in.vsd out.jpg -n "circle"
+```
+for translate only pages named "circle".
 
 ## Known Problems
 
