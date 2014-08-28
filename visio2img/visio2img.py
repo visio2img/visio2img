@@ -38,7 +38,10 @@ def _get_pages(app, page_num=None):
     if page_num is int object, return path_num-th page(from 1).
     """
     pages = app.ActiveDocument.Pages
-    return [list(pages)[page_num - 1]] if page_num else pages
+    try:
+        return [list(pages)[page_num - 1]] if page_num else pages
+    except IndexError as err:
+        raise IndexError('This file has no {}-th page.'.format(page_num))
 
 def _check_format(visio_filename, gen_img_filename):
     visio_extension = path.splitext(visio_filename)[1]
@@ -119,7 +122,6 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
         for page, page_name in zip(pages, page_names):
             page.Export(page_name)
     except com_error as err:
-        print(err)
         raise IllegalImageFormatException('Output filename is not llegal for Image File.')
     finally:
         application.Quit()
@@ -159,10 +161,8 @@ if __name__ == '__main__':
         export_img(visio_filename, gen_img_filename,
                            page_num=options.page,
                            page_name=options.page_name)
-    except (FileNotFoundError, IllegalImageFormatException) as err:
+    except (FileNotFoundError, IllegalImageFormatException, IndexError) as err:
                 # expected exception
         stderr.write(str(err)) # print message
-        """
     except Exception as err:
         print('Error')
-        """
