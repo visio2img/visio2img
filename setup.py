@@ -17,10 +17,10 @@ setup(
             'Topic :: Office/Business'
         ],
     license=(
-        'Copyright (c) 2014 Yassu\n'    # YassuでOK?
         'Released Under the MIT license\n'
         'https://github.com/yassu/Visio2Img\n'
         ),
+	scripts=['visio2img/visio2img.py'],
 
     # author info
     author='Yassu',
