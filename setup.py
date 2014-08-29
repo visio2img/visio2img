@@ -11,13 +11,17 @@ setup(
             'Development Status :: 4 - Beta',
             'Environment :: Console',
             'License :: Freeware',
-            'License :: OSI Approved :: MIT License'
+            'License :: OSI Approved :: MIT License',
+            'Intended Audience :: Developers'
+            'Operating System :: Microsoft :: Windows',
+            'Topic :: Office/Business'
         ],
     license=(
         'Copyright (c) 2014 Yassu\n'
         'Released Under the MIT license\n'
         'https://github.com/yassu/Visio2Img\n'
         ),
+    scripts=[r'visio2img\visio2img.py'],
 
     # author info
     author='Yassu',
