@@ -145,6 +145,10 @@ if __name__ == '__main__':
             help='transform only same as setted name page'
         )
     (options, argv) = parser.parse_args()
+
+    if (options.page is not None) and (options.page_name is not None):
+        stderr.write('page and page name option is appointed.')
+        exit()
     
     
     # if len(arguments) != 2, raise exception
