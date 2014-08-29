@@ -65,6 +65,7 @@ def _check_format(visio_filename, gen_img_filename):
 def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
     """
     export as image format
+    If exported page, return True and else return False.
     """
     # to absolute path
     visio_filename = path.abspath(visio_filename)
@@ -117,6 +118,10 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
         # Export pages
         for page, page_name in zip(pages, page_names):
             page.Export(page_name)
+
+        if list(pages) == []:
+            return False
+        return True # pages is not empty
     except com_error as err:
         raise IllegalImageFormatException('Output filename is not llegal for Image File.')
     finally:
@@ -161,9 +166,12 @@ if __name__ == '__main__':
     gen_img_filename = argv[1]
 
     try:
-        export_img(visio_filename, gen_img_filename,
+        is_exported = export_img(visio_filename, gen_img_filename,
                            page_num=options.page,
                            page_name=options.page_name)
+        if is_exported is False:
+            stderr("No page Output")
+            exit()
     except (FileNotFoundError, IllegalImageFormatException, IndexError) as err:
                 # expected exception
         stderr.write(str(err)) # print message
