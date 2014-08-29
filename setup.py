@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     # program info
     name='visio2img',
-    version='0.3.2rc',
+    version='0.3.3rc',
     packages=['visio2img'],
     description='module or software for translation from visio format to other general image format.',
     url='https://github.com/yassu/Visio2Img',
