@@ -170,7 +170,7 @@ if __name__ == '__main__':
                            page_num=options.page,
                            page_name=options.page_name)
         if is_exported is False:
-            stderr("No page Output")
+            stderr.write("No page Output")
             exit()
     except (FileNotFoundError, IllegalImageFormatException, IndexError) as err:
                 # expected exception
