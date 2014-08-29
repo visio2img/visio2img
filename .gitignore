@@ -7,3 +7,5 @@
 visio2img/__pycache__/
 dist/
 visio2img.egg-info/
+
+task.markdown
