@@ -97,7 +97,7 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
         document = application.Documents.Open(visio_filename)
 
         # make pages of picture
-        pages = _get_pages(application, page_num=options.page)
+        pages = _get_pages(application, page_num=page_num)
 
         ## filter of page names
         if page_name is not None:
