@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+print('OK Installation.')
 
 from sys import exit, stderr
 try:
@@ -101,11 +102,16 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
 
         ## filter of page names
         if page_name is not None:
-            # dictionary of page to page.names
-            page_dict = dict(zip(pages, pages.GetNames()))
-            pages = list(filter(
-                        lambda p: page_dict[page] ==  page_name,
-                        pages))
+            try:
+                # generator of page and page names
+                page_with_names = zip(pages, pages.GetNames())
+                page_list = list(filter(
+                            lambda pn: pn[1] == page_name,
+                            page_with_names))
+                pages = [p_w_n[0] for p_w_n in page_list]
+            except Exception as err:
+                print('Case')
+                print(err)
 
         # define page_names
         if len(pages) == 1:
@@ -118,11 +124,11 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
         # Export pages
         for page, page_name in zip(pages, page_names):
             page.Export(page_name)
-
         if list(pages) == []:
             return False
         return True # pages is not empty
     except com_error as err:
+        print('err')
         raise IllegalImageFormatException('Output filename is not llegal for Image File.')
     finally:
         application.Quit()
