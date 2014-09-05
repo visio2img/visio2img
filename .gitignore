@@ -1,8 +1,10 @@
 *.vsd
 *.vsdx
+*.un
 *.gif
 *.jpg
 *.png
+*.un~
 
 visio2img/__pycache__/
 dist/
