@@ -62,7 +62,8 @@ def _check_format(visio_filename, gen_img_filename):
                 raise IllegalImageFormatException(err_str)
 
 
-def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
+def export_img(visio_filename, gen_img_filename, 
+               page_num=None, page_name=None):
     """
     export as image format
     If exported page, return True and else return False.
@@ -72,8 +73,8 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
     gen_img_filename = path.abspath(gen_img_filename)
     
     # define filename without extension and extension variable
-    gen_img_filename_without_extension, gen_img_extension = path.splitext(gen_img_filename)
-
+    gen_img_filename_without_extension, gen_img_extension = (
+                path.splitext(gen_img_filename))
     _check_format(visio_filename, gen_img_filename)
 
     # if file is not found, exit from program
@@ -87,7 +88,8 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
     try:
         # make instance for visio
         _, visio_extension = path.splitext(visio_filename)
-        application = win32com.client.Dispatch(_get_dispatch_format(visio_extension[1:]))
+        application = win32com.client.Dispatch(
+                _get_dispatch_format(visio_extension[1:]))
 
         # case: system has no visio
         if application is None:
@@ -113,9 +115,11 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
             page_names = [gen_img_filename]
         else:   # len(pages) >= 2
             figure_length = int(log(len(pages), 10)) + 1
-            page_names = (gen_img_filename_without_extension + ("{0:0>" + str(figure_length) + "}").format(page_cnt + 1) + gen_img_extension
-                    for page_cnt in range(len(pages)))
-
+            page_names = (
+                    (gen_img_filename_without_extension + 
+                    ("{0:0>" + str(figure_length) + "}").format(page_cnt + 1) + 
+                    gen_img_extension
+                        for page_cnt in range(len(pages))))
         # Export pages
         for page, page_name in zip(pages, page_names):
             page.Export(page_name)
@@ -123,7 +127,8 @@ def export_img(visio_filename, gen_img_filename, page_num=None, page_name=None):
             return False
         return True # pages is not empty
     except com_error as err:
-        raise IllegalImageFormatException('Output filename is not llegal for Image File.')
+        raise IllegalImageFormatException(
+                'Output filename is not llegal for Image File.')
     finally:
         application.Quit()
 
