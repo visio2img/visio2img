@@ -15,7 +15,7 @@ from math import log
 __all__ = ('export_img')
 
 GEN_IMG_FORMATS = ('.gif', '.jpeg', '.jpg', '.png')
-VISIO_FORMATS = ('.vsd',)
+VISIO_FORMATS = ('.vsd', 'vsdx')
 
 
 class IllegalImageFormatException(TypeError):
@@ -33,7 +33,7 @@ class VisioNotFoundException(Exception):
 
 
 def _get_dispatch_format(extension):
-    return 'Visio.InvisibleApp'  # vsd format
+    return 'Visio.InvisibleApp'  #  format
 
 
 def _get_pages(app, page_num=None):
@@ -93,8 +93,7 @@ def export_img(visio_filename, gen_img_filename,
     try:
         # make instance for visio
         _, visio_extension = path.splitext(visio_filename)
-        application = win32com.client.Dispatch(
-            _get_dispatch_format(visio_extension[1:]))
+        application = win32com.client.Dispatch('Visio.InvisibleApp')
 
         # case: system has no visio
         if application is None:
