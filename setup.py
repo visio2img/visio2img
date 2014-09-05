@@ -4,6 +4,7 @@ setup(
     # program info
     name='visio2img',
     version='1.0.0',
+    author='Yassu',
     packages=['visio2img'],
     description=(
         'module or software for translation from visio format to'
@@ -33,6 +34,7 @@ setup(
         'Topic :: Software Development :: Embedded Systems',
         'Topic :: Office/Business'
     ],
+    author_email='yassumath@gmail.com',
     license=(
         'Released Under the Apache license\n'
         'https://github.com/yassu/Visio2Img\n'
@@ -40,6 +42,4 @@ setup(
     scripts=['visio2img/visio2img.py'],
 
     # author info
-    author='Yassu',
-    author_email='yassumath@gmail.com',
 )
