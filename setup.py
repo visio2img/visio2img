@@ -13,13 +13,13 @@ setup(
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'License :: Freeware',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: Apache Software License',
         'Intended Audience :: Developers'
         'Operating System :: Microsoft :: Windows',
         'Topic :: Office/Business'
     ],
     license=(
-        'Released Under the MIT license\n'
+        'Released Under the Apache license\n'
         'https://github.com/yassu/Visio2Img\n'
     ),
     scripts=['visio2img/visio2img.py'],
