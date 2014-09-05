@@ -3,13 +3,12 @@
 from sys import exit, stderr
 try:
     import win32com.client
-    from win32com.client import constants
 except ImportError as err:
     stderr.write('win32com module not found')
     exit()
 
 from pywintypes import com_error
-from os import path, chdir, getcwd
+from os import path
 from optparse import OptionParser
 from math import log
 
@@ -26,7 +25,7 @@ class IllegalImageFormatException(TypeError):
     """
 
 
-class VisioNotFound(Exception):
+class VisioNotFoundException(Exception):
 
     """
     This excetion means system has no visio program.
@@ -46,7 +45,7 @@ def _get_pages(app, page_num=None):
     pages = app.ActiveDocument.Pages
     try:
         return [list(pages)[page_num - 1]] if page_num else pages
-    except IndexError as err:
+    except IndexError:
         raise IndexError('This file has no {}-th page.'.format(page_num))
 
 
@@ -102,7 +101,7 @@ def export_img(visio_filename, gen_img_filename,
             raise VisioNotFoundException('System has no Visio.')
 
         application.Visible = False
-        document = application.Documents.Open(visio_filename)
+        application.Documents.Open(visio_filename)
 
         # make pages of picture
         pages = _get_pages(application, page_num=page_num)
@@ -132,7 +131,7 @@ def export_img(visio_filename, gen_img_filename,
         if list(pages) == []:
             return False
         return True  # pages is not empty
-    except com_error as err:
+    except com_error:
         raise IllegalImageFormatException(
             'Output filename is not llegal for Image File.')
     finally:
