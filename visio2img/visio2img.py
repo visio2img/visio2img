@@ -54,17 +54,14 @@ def _get_pages(app, page_num=None):
     try:
         return [list(pages)[page_num - 1]] if page_num else pages
     except IndexError:
-        raise IndexError('This file has no {}-th page.'.format(page_num))
+        raise IndexError('Invalid page number: %d' % page_num)
 
 
 def _check_format(gen_img_filename):
     gen_img_extension = path.splitext(gen_img_filename)[1]
     if gen_img_extension not in GEN_IMG_FORMATS:
-        err_str = (
-            'Output filename is not llegal for visio file. \n'
-            'This program is suppert gif, jpeg, png extension.'
-        )
-        raise IllegalImageFormatException(err_str)
+        errmsg = 'Unsupported image format: %s' % gen_img_filename
+        raise IllegalImageFormatException(errmsg)
 
 
 def export_img(visio_filename, gen_img_filename,
@@ -75,22 +72,18 @@ def export_img(visio_filename, gen_img_filename,
     """
     from pywintypes import com_error
 
-    # to absolute path
-    visio_filename = path.abspath(visio_filename)
-    gen_img_filename = path.abspath(gen_img_filename)
+    visio_pathname = path.abspath(visio_filename)
+    gen_img_pathname = path.abspath(gen_img_filename)
 
     # define filename without extension and extension variable
-    gen_img_filename_without_extension, gen_img_extension = (
-        path.splitext(gen_img_filename))
-    _check_format(visio_filename, gen_img_filename)
+    _check_format(gen_img_pathname)
 
     # if file is not found, exit from program
-    if not path.exists(visio_filename):
-        raise FileNotFoundError('Input File is not found.')
+    if not path.exists(visio_pathname):
+        raise FileNotFoundError('visio files not found: %s' % visio_filename)
 
-    gen_img_dir_name = path.dirname(gen_img_filename)
-    if not path.isdir(gen_img_dir_name):
-        raise FileNotFoundError('Directory of Output File is not found')
+    if not path.isdir(path.dirname(gen_img_pathname)):
+        raise FileNotFoundError('Could not write image file: %s' % gen_img_filename)
 
     try:
         import win32com.client
@@ -99,7 +92,7 @@ def export_img(visio_filename, gen_img_filename,
         raise VisioNotFoundException('Visio not found. visio2img requires Visio.')
 
     try:
-        visioapp.Documents.Open(visio_filename)
+        visioapp.Documents.Open(visio_pathname)
     except:
         raise UnsupportedFileError('Could not open file: %s' % visio_filename)
 
@@ -118,9 +111,11 @@ def export_img(visio_filename, gen_img_filename,
 
         # define page_names
         if len(pages) == 1:
-            page_names = [gen_img_filename]
+            page_names = [gen_img_pathname]
         else:   # len(pages) >= 2
             figure_length = int(log(len(pages), 10)) + 1
+            gen_img_filename_without_extension, gen_img_extension = (
+                 path.splitext(gen_img_pathname))
             page_names = (
                 (gen_img_filename_without_extension +
                  ("{0:0>" + str(figure_length) + "}").format(page_cnt + 1) +
@@ -134,7 +129,7 @@ def export_img(visio_filename, gen_img_filename,
         return True  # pages is not empty
     except com_error:
         raise IllegalImageFormatException(
-            'Output filename is not llegal for Image File.')
+            'Could not write image: %d' % gen_img_pathname)
     finally:
         visioapp.Quit()
 
@@ -159,12 +154,12 @@ def main(args=sys.argv[1:]):
     (options, argv) = parser.parse_args(args)
 
     if (options.page is not None) and (options.page_name is not None):
-        stderr.write('page and page name option is appointed.')
+        stderr.write('--page and ---name options are conflicted')
         return -1
 
     # if len(arguments) != 2, raise exception
     if len(argv) != 2:
-        stderr.write('Enter Only input_filename and output_filename')
+        parser.print_usage(stderr)
         return -1
 
     if not is_pywin32_available():
