@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from sys import exit, stderr
+import sys
+from sys import stderr
 try:
     import win32com.client
 except ImportError as err:
@@ -139,11 +140,7 @@ def export_img(visio_filename, gen_img_filename,
         application.Quit()
 
 
-def main(*filenames, **kwg):
-    visio_filename, gen_img_filename = filenames
-    export_img(filenames, **kwg)
-
-if __name__ == '__main__':
+def main(args=sys.argv[1:]):
     # define parser
     parser = OptionParser()
     parser.add_option(
@@ -160,16 +157,16 @@ if __name__ == '__main__':
         dest='page_name',
         help='transform only same as setted name page'
     )
-    (options, argv) = parser.parse_args()
+    (options, argv) = parser.parse_args(args)
 
     if (options.page is not None) and (options.page_name is not None):
         stderr.write('page and page name option is appointed.')
-        exit()
+        return -1
 
     # if len(arguments) != 2, raise exception
     if len(argv) != 2:
         stderr.write('Enter Only input_filename and output_filename')
-        exit()
+        return -1
 
     # define input_filename and output_filename
     visio_filename = argv[0]
@@ -181,9 +178,13 @@ if __name__ == '__main__':
                                  page_name=options.page_name)
         if is_exported is False:
             stderr.write("No page Output")
-            exit()
+            return -1
+
+        return 0
     except (FileNotFoundError, IllegalImageFormatException, IndexError) as err:
         # expected exception
         stderr.write(str(err))  # print message
+        return -1
     except Exception as err:
         print('Error')
+        return -1

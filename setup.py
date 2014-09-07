@@ -39,7 +39,10 @@ setup(
         'Released Under the Apache license\n'
         'https://github.com/yassu/Visio2Img\n'
     ),
-    scripts=['visio2img/visio2img.py'],
+    entry_points="""
+       [console_scripts]
+       visio2img = visio2img.visio2img:main
+    """
 
     # author info
 )
