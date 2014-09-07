@@ -11,3 +11,6 @@ __pycache__
 
 .tox/
 dist/
+Lib/
+Include/
+Scripts/
