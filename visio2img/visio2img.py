@@ -101,23 +101,16 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
     try:
         pages = filter_pages(visioapp.ActiveDocument.Pages, pagenum, pagename)
 
-        # define page_names
         if len(pages) == 1:
-            page_names = [gen_img_pathname]
-        else:   # len(pages) >= 2
-            figure_length = int(log(len(pages), 10)) + 1
-            gen_img_filename_without_extension, gen_img_extension = (
-                 path.splitext(gen_img_pathname))
-            page_names = (
-                (gen_img_filename_without_extension +
-                 ("{0:0>" + str(figure_length) + "}").format(page_cnt + 1) +
-                 gen_img_extension
-                 for page_cnt in range(len(pages))))
+            pages[0].Export(gen_img_pathname)
+        else:
+            digits = int(log(len(pages), 10)) + 1
+            basename, ext = path.splitext(gen_img_pathname)
+            filename_format = "%s%%0%d%s" % (basename, digits, ext)
 
-        # Export pages
-        for page, page_name in zip(pages, page_names):
-            page.Export(page_name)
-        return True  # pages is not empty
+            for i, page in enumerate(pages):
+                img_filename = filename_format % i + 1
+                page.Export(img_filename)
     except com_error:
         raise IllegalImageFormatException(
             'Could not write image: %d' % gen_img_pathname)
