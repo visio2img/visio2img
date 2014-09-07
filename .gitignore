@@ -5,6 +5,7 @@
 *.jpg
 *.png
 *.un~
+*.swp
 *.egg-info
 __pycache__
 
