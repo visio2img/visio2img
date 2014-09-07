@@ -6,6 +6,7 @@ env:
     - TOXENV=py34
     - TOXENV=coverage
 install:
+  - pip install tox
   - if test "$TOXENV" = coverage ; then pip install python-coveralls ; fi
 script: tox
 after_success:
