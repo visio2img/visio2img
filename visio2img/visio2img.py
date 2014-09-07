@@ -85,13 +85,15 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
         raise FileNotFoundError('visio files not found: %s' % visio_filename)
 
     if not path.isdir(path.dirname(gen_img_pathname)):
-        raise FileNotFoundError('Could not write image file: %s' % gen_img_filename)
+        msg = 'Could not write image file: %s' % gen_img_filename
+        raise FileNotFoundError(msg)
 
     try:
         import win32com.client
         visioapp = win32com.client.Dispatch('Visio.InvisibleApp')
     except:
-        raise VisioNotFoundException('Visio not found. visio2img requires Visio.')
+        msg = 'Visio not found. visio2img requires Visio.'
+        raise VisioNotFoundException(msg)
 
     try:
         visioapp.Documents.Open(visio_pathname)
@@ -159,7 +161,8 @@ def main(args=sys.argv[1:]):
                    options.pagenum, options.pagename)
 
         return 0
-    except (FileNotFoundError, VisioNotFoundException, IllegalImageFormatException, IndexError) as err:
+    except (FileNotFoundError, VisioNotFoundException,
+            IllegalImageFormatException, IndexError) as err:
         # expected exception
         stderr.write(str(err))  # print message
         return -1
