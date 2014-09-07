@@ -10,7 +10,7 @@ from math import log
 __all__ = ('export_img')
 
 GEN_IMG_FORMATS = ('.gif', '.jpeg', '.jpg', '.png')
-VISIO_FORMATS = ('.vsd', 'vsdx')
+VISIO_FORMATS = ('.vsd', '.vsdx')
 
 
 def is_pywin32_available():
