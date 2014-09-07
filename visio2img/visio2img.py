@@ -44,17 +44,20 @@ class VisioNotFoundException(Exception):
     """
 
 
-def _get_pages(app, page_num=None):
-    """
-    app -> page
-    if page_num is None, return all pages.
-    if page_num is int object, return path_num-th page(from 1).
-    """
-    pages = app.ActiveDocument.Pages
-    try:
-        return [list(pages)[page_num - 1]] if page_num else pages
-    except IndexError:
-        raise IndexError('Invalid page number: %d' % page_num)
+def filter_pages(pages, pagenum, pagename):
+    """ Choice pages using pagenum and pagename. """
+    if pagenum:
+        try:
+            pages = list(pages)[pagenum - 1:pagenum]
+        except IndexError:
+            raise IndexError('Invalid page number: %d' % pagenum)
+
+    if pagename:
+        pages = [page for page in pages if pages.name == pagename]
+        if pages == []:
+            raise IndexError('Page not found: pagename=%s' % pagename)
+
+    return pages
 
 
 def _check_format(gen_img_filename):
@@ -64,8 +67,7 @@ def _check_format(gen_img_filename):
         raise IllegalImageFormatException(errmsg)
 
 
-def export_img(visio_filename, gen_img_filename,
-               page_num=None, page_name=None):
+def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
     """
     export as image format
     If exported page, return True and else return False.
@@ -97,17 +99,7 @@ def export_img(visio_filename, gen_img_filename,
         raise UnsupportedFileError('Could not open file: %s' % visio_filename)
 
     try:
-        # make pages of picture
-        pages = _get_pages(visioapp, page_num=page_num)
-
-        # filter of page names
-        if page_name is not None:
-            # generator of page and page names
-            page_with_names = zip(pages, pages.GetNames())
-            page_list = list(filter(
-                lambda pn: pn[1] == page_name,
-                page_with_names))
-            pages = [p_w_n[0] for p_w_n in page_list]
+        pages = filter_pages(visioapp.ActiveDocument.Pages, pagenum, pagename)
 
         # define page_names
         if len(pages) == 1:
@@ -121,11 +113,10 @@ def export_img(visio_filename, gen_img_filename,
                  ("{0:0>" + str(figure_length) + "}").format(page_cnt + 1) +
                  gen_img_extension
                  for page_cnt in range(len(pages))))
+
         # Export pages
         for page, page_name in zip(pages, page_names):
             page.Export(page_name)
-        if list(pages) == []:
-            return False
         return True  # pages is not empty
     except com_error:
         raise IllegalImageFormatException(
@@ -141,19 +132,19 @@ def main(args=sys.argv[1:]):
         '-p', '--page',
         action='store',
         type='int',
-        dest='page',
+        dest='pagenum',
         help='transform only one page(set number of this page)'
     )
     parser.add_option(
         '-n', '--name',
         action='store',
         type='string',
-        dest='page_name',
+        dest='pagename',
         help='transform only same as setted name page'
     )
     (options, argv) = parser.parse_args(args)
 
-    if (options.page is not None) and (options.page_name is not None):
+    if (options.pagenum is not None) and (options.pagename is not None):
         stderr.write('--page and ---name options are conflicted')
         return -1
 
@@ -171,18 +162,11 @@ def main(args=sys.argv[1:]):
     gen_img_filename = argv[1]
 
     try:
-        is_exported = export_img(visio_filename, gen_img_filename,
-                                 page_num=options.page,
-                                 page_name=options.page_name)
-        if is_exported is False:
-            stderr.write("No page Output")
-            return -1
+        export_img(visio_filename, gen_img_filename,
+                   options.pagenum, options.pagename)
 
         return 0
     except (FileNotFoundError, VisioNotFoundException, IllegalImageFormatException, IndexError) as err:
         # expected exception
         stderr.write(str(err))  # print message
-        return -1
-    except Exception as err:
-        print('Error')
         return -1
