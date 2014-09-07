@@ -35,71 +35,8 @@ class VisioNotFoundException(Exception):
 
     """
     This excetion means system has no visio program.
-    
     """
 
-class VisioPages:
-    def __init__(self, filename, page_num=None, page_name=None):
-        # set filename
-        self._filename = path.abspath(visio_filename)
-        extension = path.splitext(self._filename)[1]
-        if extension not in VISIO_FORMATS:
-            err_str = (
-                        'Input filename is not llegal for visio file.\n'
-                        'This program is support vsd and vsdx extension'
-                    )
-                # todo: define function like as what returns 'vsd and vsdx'
-            raise IllegalImageFormatException(err_str)
-
-        # if file is not found, exit from program
-        if not path.exists(visio_filename):
-            raise FileNotFoundError('Input File is not found.')
-
-
-        self._pages, self._page_nums = None, None
-        self._build_pages(page_num, page_name)  # build IVPage Instance
-        self._build_page_names(page_num, page_name)
-        self._build_page_nums(page_num, page_name)
-
-        self._app = win32com.client.Dispatch('Visio.InvisibleApp')
-        # if system has no Visio, raise Exception
-        if self._app is None:
-            raise VisioNotFoundException('System has no Visio')
-
-        self._app.Visible = False
-        self._app.Documents.Open(visio_filename)
-
-    def _build_pages(self, page_num, page_name):
-        pages = self._app.ActiveDocument.Pages
-        
-        # consider only page_num
-        try:
-            pages = [list(pages)[page_num - 1]] if page_num else pages
-        except IndexError:
-            raise IndexError('This file has no {}-th page.'.format(page_num))
-        
-        # consider 
-
-    def _build_page_nums(self):
-        pass
-
-    def get_page_names(self):
-        pass
-
-    def get_page_nums(self):
-        pass
-
-    def export_img(self, general_image_filename):
-        pass
-
-    def __len__(self):
-        return len(self._page_num)
-
-    def __del__(self):
-        self._app.Quit()
-
-    def __repr__(self):
-        pass
 
 def _get_pages(app, page_num=None):
     """
