@@ -10,7 +10,6 @@ from math import log
 __all__ = ('export_img')
 
 GEN_IMG_FORMATS = ('.gif', '.jpeg', '.jpg', '.png')
-VISIO_FORMATS = ('.vsd', '.vsdx')
 
 
 def is_pywin32_available():
@@ -58,16 +57,8 @@ def _get_pages(app, page_num=None):
         raise IndexError('This file has no {}-th page.'.format(page_num))
 
 
-def _check_format(visio_filename, gen_img_filename):
-    visio_extension = path.splitext(visio_filename)[1]
+def _check_format(gen_img_filename):
     gen_img_extension = path.splitext(gen_img_filename)[1]
-    if visio_extension not in VISIO_FORMATS:
-        err_str = (
-            'Input filename is not llegal for visio file. \n'
-            'This program is suppert only vsd extension.'
-        )
-        raise IllegalImageFormatException(err_str)
-
     if gen_img_extension not in GEN_IMG_FORMATS:
         err_str = (
             'Output filename is not llegal for visio file. \n'
