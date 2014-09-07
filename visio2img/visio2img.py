@@ -78,7 +78,6 @@ def export_img(visio_filename, gen_img_filename,
     export as image format
     If exported page, return True and else return False.
     """
-    import win32com.client
     from pywintypes import com_error
 
     # to absolute path
@@ -99,19 +98,16 @@ def export_img(visio_filename, gen_img_filename,
         raise FileNotFoundError('Directory of Output File is not found')
 
     try:
-        # make instance for visio
-        _, visio_extension = path.splitext(visio_filename)
-        application = win32com.client.Dispatch('Visio.InvisibleApp')
+        import win32com.client
+        visioapp = win32com.client.Dispatch('Visio.InvisibleApp')
+    except:
+        raise VisioNotFoundException('Visio not found. visio2img requires Visio.')
 
-        # case: system has no visio
-        if application is None:
-            raise VisioNotFoundException('System has no Visio.')
-
-        application.Visible = False
-        application.Documents.Open(visio_filename)
+    try:
+        visioapp.Documents.Open(visio_filename)
 
         # make pages of picture
-        pages = _get_pages(application, page_num=page_num)
+        pages = _get_pages(visioapp, page_num=page_num)
 
         # filter of page names
         if page_name is not None:
@@ -142,7 +138,7 @@ def export_img(visio_filename, gen_img_filename,
         raise IllegalImageFormatException(
             'Output filename is not llegal for Image File.')
     finally:
-        application.Quit()
+        visioapp.Quit()
 
 
 def main(args=sys.argv[1:]):
@@ -190,7 +186,7 @@ def main(args=sys.argv[1:]):
             return -1
 
         return 0
-    except (FileNotFoundError, IllegalImageFormatException, IndexError) as err:
+    except (FileNotFoundError, VisioNotFoundException, IllegalImageFormatException, IndexError) as err:
         # expected exception
         stderr.write(str(err))  # print message
         return -1
