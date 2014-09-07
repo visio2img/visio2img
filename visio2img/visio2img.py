@@ -2,13 +2,7 @@
 
 import sys
 from sys import stderr
-try:
-    import win32com.client
-except ImportError as err:
-    stderr.write('win32com module not found')
-    exit()
 
-from pywintypes import com_error
 from os import path
 from optparse import OptionParser
 from math import log
@@ -17,6 +11,14 @@ __all__ = ('export_img')
 
 GEN_IMG_FORMATS = ('.gif', '.jpeg', '.jpg', '.png')
 VISIO_FORMATS = ('.vsd', 'vsdx')
+
+
+def is_pywin32_available():
+    try:
+        import win32com  # NOQA: import test
+        return True
+    except ImportError:
+        return False
 
 
 class FileNotFoundError(Exception):
@@ -76,6 +78,9 @@ def export_img(visio_filename, gen_img_filename,
     export as image format
     If exported page, return True and else return False.
     """
+    import win32com.client
+    from pywintypes import com_error
+
     # to absolute path
     visio_filename = path.abspath(visio_filename)
     gen_img_filename = path.abspath(gen_img_filename)
@@ -166,6 +171,10 @@ def main(args=sys.argv[1:]):
     # if len(arguments) != 2, raise exception
     if len(argv) != 2:
         stderr.write('Enter Only input_filename and output_filename')
+        return -1
+
+    if not is_pywin32_available():
+        stderr.write('win32com module not found')
         return -1
 
     # define input_filename and output_filename
