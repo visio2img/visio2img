@@ -34,6 +34,10 @@ class IllegalImageFormatException(TypeError):
     """
 
 
+class UnsupportedFileError(Exception):
+    """ exception represens the specified file is not supported """
+
+
 class VisioNotFoundException(Exception):
 
     """
@@ -105,7 +109,10 @@ def export_img(visio_filename, gen_img_filename,
 
     try:
         visioapp.Documents.Open(visio_filename)
+    except:
+        raise UnsupportedFileError('Could not open file: %s' % visio_filename)
 
+    try:
         # make pages of picture
         pages = _get_pages(visioapp, page_num=page_num)
 
