@@ -1,7 +1,6 @@
 from setuptools import setup
 
 setup(
-    # program info
     name='visio2img',
     version='1.0.0',
     author='Yassu',
@@ -10,14 +9,14 @@ setup(
         'module or software for translation from visio format to'
         'other general image format.'),
     long_description=(
-        'If you use this program as command in terminal, ' 
-            'this program provides visio2img.py command.\n'
+        'If you use this program as command in terminal, '
+        'this program provides visio2img.py command.\n'
         'If you use this program as module of python, '
-            'this module provides visio2img.visio2img.export_img function.\n'
+        'this module provides visio2img.visio2img.export_img function.\n'
         'Requirements of this program is '
-            'Visio application and win32com module.\n'
-            'This program is for only python3.'
-            ),
+        'Visio application and win32com module.\n'
+        'This program is for only python3.'
+    ),
     url='https://github.com/yassu/Visio2Img',
     classifiers=[
         'Programming Language :: Python',
@@ -25,7 +24,6 @@ setup(
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
-            # for my sphinxcontrib-visio
         'License :: Freeware',
         'License :: OSI Approved :: Apache Software License',
         'Intended Audience :: Developers'
@@ -43,6 +41,4 @@ setup(
        [console_scripts]
        visio2img = visio2img.visio2img:main
     """
-
-    # author info
 )
