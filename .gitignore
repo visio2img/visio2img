@@ -5,9 +5,8 @@
 *.jpg
 *.png
 *.un~
+*.egg-info
+__pycache__
 
-visio2img/__pycache__/
+.tox/
 dist/
-visio2img.egg-info/
-
-task.markdown
