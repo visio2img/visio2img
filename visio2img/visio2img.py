@@ -18,6 +18,12 @@ GEN_IMG_FORMATS = ('.gif', '.jpeg', '.jpg', '.png')
 VISIO_FORMATS = ('.vsd', 'vsdx')
 
 
+class FileNotFoundError(Exception):
+    """
+    exception represents the input file is not found
+    """
+
+
 class IllegalImageFormatException(TypeError):
 
     """
