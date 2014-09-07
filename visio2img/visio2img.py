@@ -98,7 +98,8 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
     try:
         visioapp.Documents.Open(visio_pathname)
     except:
-        raise UnsupportedFileError('Could not open file: %s' % visio_filename)
+        msg = 'Could not open file (already opend by other process?): %s'
+        raise UnsupportedFileError(msg % visio_filename)
 
     try:
         pages = filter_pages(visioapp.ActiveDocument.Pages, pagenum, pagename)
