@@ -4,10 +4,6 @@ env:
   matrix:
     - TOXENV=py33
     - TOXENV=py34
-    - TOXENV=coverage
 install:
   - pip install docutils tox
-  - if test "$TOXENV" = coverage ; then pip install python-coveralls ; fi
 script: tox
-after_success:
-  - if test "$TOXENV" = coverage ; then coveralls ; fi
