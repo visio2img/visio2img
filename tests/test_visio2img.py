@@ -1,7 +1,12 @@
 import sys
 import unittest
-from unittest.mock import patch
 from collections import namedtuple
+
+if sys.version_info > (3, 0):
+    from unittest.mock import patch
+else:
+    from mock import patch
+
 from visio2img.visio2img import (
     is_pywin32_available,
     filter_pages,

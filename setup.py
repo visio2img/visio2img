@@ -1,4 +1,10 @@
+import sys
 from setuptools import setup
+
+if sys.version_info > (3, 0):
+    test_requires = []
+else:
+    test_requires = ['mock']
 
 setup(
     name='visio2img',
@@ -37,6 +43,7 @@ setup(
         'Released Under the Apache license\n'
         'https://github.com/yassu/Visio2Img\n'
     ),
+    test_requires=test_requires,
     entry_points="""
        [console_scripts]
        visio2img = visio2img.visio2img:main
