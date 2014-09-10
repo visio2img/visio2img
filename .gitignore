@@ -1,9 +1,4 @@
-*.vsd
-*.vsdx
 *.un
-*.gif
-*.jpg
-*.png
 *.un~
 *.swp
 *.pyc

@@ -1,5 +1,10 @@
+﻿# -*- coding: utf-8 -*-
+
+import os
 import sys
 import unittest
+from shutil import rmtree
+from tempfile import mkdtemp
 from collections import namedtuple
 
 if sys.version_info > (3, 0):
@@ -11,11 +16,25 @@ from visio2img.visio2img import (
     is_pywin32_available,
     filter_pages,
     _check_format,
+    export_img,
     main,
     FileNotFoundError,
     VisioNotFoundException,
     IllegalImageFormatException,
+    UnsupportedFileError
 )
+
+EXAMPLE_DIR = os.path.join(os.path.dirname(__file__), 'examples')
+
+VISIO_AVAILABLE = False
+if is_pywin32_available:
+    import win32com.client
+    try:
+        app = win32com.client.Dispatch('Visio.InvisibleApp')
+        app.Quit()
+        VISIO_AVAILABLE = True
+    except:
+        pass
 
 
 class TestVisio2img(unittest.TestCase):
@@ -163,3 +182,154 @@ class TestVisio2img(unittest.TestCase):
         finally:
             sys.path = loadpath  # write back library loading paths
             sys.modules.pop('win32com', None)  # unload win32com forcely
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_singlepage_to_png(self):
+        try:
+            tmpdir = mkdtemp()
+            export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsdx'),
+                       os.path.join(tmpdir, 'output.png'), None, None)
+            self.assertEqual(['output.png'], os.listdir(tmpdir))
+
+            expected = os.path.join(EXAMPLE_DIR, 'singlepage', 'output.png')
+            actual = os.path.join(tmpdir, 'output.png')
+            self.assertEqual(open(expected, 'rb').read(),
+                             open(actual, 'rb').read())
+        finally:
+            rmtree(tmpdir)
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_singlepage_to_jpg(self):
+        try:
+            tmpdir = mkdtemp()
+            export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsdx'),
+                       os.path.join(tmpdir, 'output.jpg'), None, None)
+            self.assertEqual(['output.jpg'], os.listdir(tmpdir))
+
+            expected = os.path.join(EXAMPLE_DIR, 'singlepage', 'output.jpg')
+            actual = os.path.join(tmpdir, 'output.jpg')
+            self.assertEqual(open(expected, 'rb').read(),
+                             open(actual, 'rb').read())
+        finally:
+            rmtree(tmpdir)
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_singlepage_to_gif(self):
+        try:
+            tmpdir = mkdtemp()
+            export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsdx'),
+                       os.path.join(tmpdir, 'output.gif'), None, None)
+            self.assertEqual(['output.gif'], os.listdir(tmpdir))
+
+            expected = os.path.join(EXAMPLE_DIR, 'singlepage', 'output.gif')
+            actual = os.path.join(tmpdir, 'output.gif')
+            self.assertEqual(open(expected, 'rb').read(),
+                             open(actual, 'rb').read())
+        finally:
+            rmtree(tmpdir)
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_multipages1(self):
+        try:
+            tmpdir = mkdtemp()
+            export_img(os.path.join(EXAMPLE_DIR, 'multipages.vsdx'),
+                       os.path.join(tmpdir, 'output.png'), None, None)
+            self.assertEqual(['output1.png', 'output2.png'],
+                             os.listdir(tmpdir))
+        finally:
+            rmtree(tmpdir)
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_multipages2(self):
+        try:
+            tmpdir = mkdtemp()
+            export_img(os.path.join(EXAMPLE_DIR, 'multipages2.vsdx'),
+                       os.path.join(tmpdir, 'output.png'), None, None)
+
+            expected = ['output01.png', 'output02.png', 'output03.png',
+                        'output04.png', 'output05.png', 'output06.png',
+                        'output07.png', 'output08.png', 'output09.png',
+                        'output10.png']
+            self.assertEqual(expected, os.listdir(tmpdir))
+        finally:
+            rmtree(tmpdir)
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_multipages_with_pagenum(self):
+        try:
+            tmpdir = mkdtemp()
+            export_img(os.path.join(EXAMPLE_DIR, 'multipages.vsdx'),
+                       os.path.join(tmpdir, 'output.png'), 2, None)
+            self.assertEqual(['output.png'], os.listdir(tmpdir))
+
+            expected = os.path.join(EXAMPLE_DIR, 'multipages', 'output2.png')
+            actual = os.path.join(tmpdir, 'output.png')
+            self.assertEqual(open(expected, 'rb').read(),
+                             open(actual, 'rb').read())
+
+        finally:
+            rmtree(tmpdir)
+
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_multipages_with_pagename(self):
+        try:
+            tmpdir = mkdtemp()
+            export_img(os.path.join(EXAMPLE_DIR, 'multipages.vsdx'),
+                       os.path.join(tmpdir, 'output.png'), None, u"ページ - 2")
+            self.assertEqual(['output.png'], os.listdir(tmpdir))
+
+            expected = os.path.join(EXAMPLE_DIR, 'multipages', 'output2.png')
+            actual = os.path.join(tmpdir, 'output.png')
+            self.assertEqual(open(expected, 'rb').read(),
+                             open(actual, 'rb').read())
+
+        finally:
+            rmtree(tmpdir)
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_from_vsd(self):
+        try:
+            tmpdir = mkdtemp()
+            export_img(os.path.join(EXAMPLE_DIR, 'multipages.vsd'),
+                       os.path.join(tmpdir, 'output.png'), None, None)
+            self.assertEqual(['output1.png', 'output2.png'],
+                             os.listdir(tmpdir))
+        finally:
+            rmtree(tmpdir)
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_visio_file_not_found(self):
+        with self.assertRaises(FileNotFoundError):
+            export_img('/path/to/notexist.vsd', '/path/to/output.png', None, None)
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_output_dir_not_found(self):
+        with self.assertRaises(FileNotFoundError):
+            export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsd'),
+                       '/path/to/output.png', None, None)
+
+    @patch('win32com.client')
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_if_visio_not_found(self, win32com_client):
+        from pywintypes import com_error
+        win32com_client.Dispatch.side_effect = com_error
+
+        try:
+            tmpdir = mkdtemp()
+            with self.assertRaises(VisioNotFoundException):
+                export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsdx'),
+                           os.path.join(tmpdir, 'output.png'), None, None)
+        finally:
+            rmtree(tmpdir)
+
+
+    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
+    def test_export_img_with_non_visio_file(self):
+        try:
+            tmpdir = mkdtemp()
+            with self.assertRaises(UnsupportedFileError):
+                export_img(__file__,
+                           os.path.join(tmpdir, 'output.png'), None, None)
+        finally:
+            rmtree(tmpdir)
