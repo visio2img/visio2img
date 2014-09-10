@@ -48,12 +48,12 @@ def filter_pages(pages, pagenum, pagename):
     """ Choice pages using pagenum and pagename. """
     if pagenum:
         try:
-            pages = list(pages)[pagenum - 1:pagenum]
+            pages = [list(pages)[pagenum - 1]]
         except IndexError:
             raise IndexError('Invalid page number: %d' % pagenum)
 
     if pagename:
-        pages = [page for page in pages if pages.name == pagename]
+        pages = [page for page in pages if page.name == pagename]
         if pages == []:
             raise IndexError('Page not found: pagename=%s' % pagename)
 
