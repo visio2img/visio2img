@@ -109,10 +109,10 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
         else:
             digits = int(log(len(pages), 10)) + 1
             basename, ext = path.splitext(gen_img_pathname)
-            filename_format = "%s%%0%d%s" % (basename, digits, ext)
+            filename_format = "%s%%0%dd%s" % (basename, digits, ext)
 
             for i, page in enumerate(pages):
-                img_filename = filename_format % i + 1
+                img_filename = filename_format % (i + 1)
                 page.Export(img_filename)
     except com_error:
         raise IllegalImageFormatException(
