@@ -27,7 +27,6 @@ class FileNotFoundError(Exception):
 
 
 class IllegalImageFormatException(TypeError):
-
     """
     This exception means Exceptions for Illegal Image Format.
     """
@@ -38,7 +37,6 @@ class UnsupportedFileError(Exception):
 
 
 class VisioNotFoundException(Exception):
-
     """
     This excetion means system has no visio program.
     """
@@ -77,10 +75,8 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
     visio_pathname = path.abspath(visio_filename)
     gen_img_pathname = path.abspath(gen_img_filename)
 
-    # define filename without extension and extension variable
     _check_format(gen_img_pathname)
 
-    # if file is not found, exit from program
     if not path.exists(visio_pathname):
         raise FileNotFoundError('visio files not found: %s' % visio_filename)
 
@@ -122,7 +118,6 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
 
 
 def main(args=sys.argv[1:]):
-    # define parser
     parser = OptionParser()
     parser.add_option(
         '-p', '--page',
@@ -144,7 +139,6 @@ def main(args=sys.argv[1:]):
         stderr.write('--page and ---name options are conflicted')
         return -1
 
-    # if len(arguments) != 2, raise exception
     if len(argv) != 2:
         parser.print_usage(stderr)
         return -1
@@ -153,14 +147,8 @@ def main(args=sys.argv[1:]):
         stderr.write('win32com module not found')
         return -1
 
-    # define input_filename and output_filename
-    visio_filename = argv[0]
-    gen_img_filename = argv[1]
-
     try:
-        export_img(visio_filename, gen_img_filename,
-                   options.pagenum, options.pagename)
-
+        export_img(argv[0], argv[1], options.pagenum, options.pagename)
         return 0
     except (FileNotFoundError, VisioNotFoundException,
             IllegalImageFormatException, IndexError) as err:
