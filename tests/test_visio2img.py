@@ -297,7 +297,6 @@ class TestVisio2img(unittest.TestCase):
         finally:
             rmtree(tmpdir)
 
-
     @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_multipages_with_pagename(self):
         try:
@@ -328,7 +327,8 @@ class TestVisio2img(unittest.TestCase):
     @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_visio_file_not_found(self):
         with self.assertRaises(FileNotFoundError):
-            export_img('/path/to/notexist.vsd', '/path/to/output.png', None, None)
+            export_img('/path/to/notexist.vsd', '/path/to/output.png',
+                       None, None)
 
     @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_output_dir_not_found(self):
@@ -349,7 +349,6 @@ class TestVisio2img(unittest.TestCase):
                            os.path.join(tmpdir, 'output.png'), None, None)
         finally:
             rmtree(tmpdir)
-
 
     @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_with_non_visio_file(self):
