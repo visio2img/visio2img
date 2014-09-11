@@ -27,7 +27,7 @@ from visio2img.visio2img import (
 EXAMPLE_DIR = os.path.join(os.path.dirname(__file__), 'examples')
 
 VISIO_AVAILABLE = False
-if is_pywin32_available:
+if is_pywin32_available():
     import win32com.client
     try:
         app = win32com.client.Dispatch('Visio.InvisibleApp')
