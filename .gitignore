@@ -9,5 +9,6 @@ __pycache__
 .tox/
 dist/
 Lib/
+man/
 Include/
 Scripts/
