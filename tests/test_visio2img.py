@@ -15,7 +15,6 @@ else:
 from visio2img.visio2img import (
     is_pywin32_available,
     filter_pages,
-    _check_format,
     export_img,
     main,
     FileNotFoundError,
@@ -70,19 +69,7 @@ class TestVisio2img(unittest.TestCase):
         with self.assertRaises(IndexError):
             filter_pages(pages, None, 'unknown')
 
-    def test_check_format(self):
-        self.assertIsNone(_check_format('image.gif'))
-        self.assertIsNone(_check_format('image.jpg'))
-        self.assertIsNone(_check_format('image.jpeg'))
-        self.assertIsNone(_check_format('image.png'))
-
-        with self.assertRaises(IllegalImageFormatException):
-            _check_format('image.pdf')
-
-        with self.assertRaises(IllegalImageFormatException):
-            _check_format('filename_without_ext')
-
-    @patch("visio2img.visio2img.stderr")
+    @patch("sys.stderr")
     @patch("visio2img.visio2img.export_img")
     def test_parse_option(self, export_img, _):
         try:
@@ -90,15 +77,15 @@ class TestVisio2img(unittest.TestCase):
             sys.modules['win32com'] = True
 
             # no arguments, win32com available
-            args = []
-            ret = main(args)
-            self.assertEqual(-1, ret)
+            with self.assertRaises(SystemExit):
+                args = []
+                main(args)
             self.assertEqual(0, export_img.call_count)
 
             # one argument, win32com available
-            args = ['input.vsd']
-            ret = main(args)
-            self.assertEqual(-1, ret)
+            with self.assertRaises(SystemExit):
+                args = ['input.vsd']
+                main(args)
             self.assertEqual(0, export_img.call_count)
 
             # two arguments, win32com available
@@ -110,9 +97,9 @@ class TestVisio2img(unittest.TestCase):
                                           None, None)
 
             # three arguments, win32com available
-            args = ['input.vsd', 'output.png', 'other_args']
-            ret = main(args)
-            self.assertEqual(-1, ret)
+            with self.assertRaises(SystemExit):
+                args = ['input.vsd', 'output.png', 'other_args']
+                main(args)
             self.assertEqual(1, export_img.call_count)
 
             # two arguments, --page option, win32com available
@@ -132,9 +119,9 @@ class TestVisio2img(unittest.TestCase):
                                           None, 'sheet1')
 
             # two arguments, --page and --name option, win32com available
-            args = ['-p', '3', '-n', 'sheet1', 'input.vsd', 'output.png']
-            ret = main(args)
-            self.assertEqual(-1, ret)
+            with self.assertRaises(SystemExit):
+                args = ['-p', '3', '-n', 'sheet1', 'input.vsd', 'output.png']
+                main(args)
             self.assertEqual(3, export_img.call_count)
 
             # two arguments, win32com unavailable
@@ -147,7 +134,47 @@ class TestVisio2img(unittest.TestCase):
             sys.path = loadpath  # write back library loading paths
             sys.modules.pop('win32com', None)  # unload win32com forcely
 
-    @patch("visio2img.visio2img.stderr")
+    @patch("sys.stderr")
+    @patch("visio2img.visio2img.export_img")
+    def test_check_image_formats(self, export_img, _):
+        try:
+            loadpath, sys.path = sys.path, []  # disable to load all modules
+            sys.modules['win32com'] = True
+
+            # .png
+            args = ['input.vsd', 'output.png']
+            ret = main(args)
+            self.assertEqual(0, ret)
+
+            # .gif
+            args = ['input.vsd', 'output.gif']
+            ret = main(args)
+            self.assertEqual(0, ret)
+
+            # .jpg
+            args = ['input.vsd', 'output.jpg']
+            ret = main(args)
+            self.assertEqual(0, ret)
+
+            # .pdf
+            with self.assertRaises(SystemExit):
+                args = ['input.vsd', 'output.pdf']
+                main(args)
+
+            # .PNG (capital)
+            args = ['input.vsd', 'output.PNG']
+            ret = main(args)
+            self.assertEqual(0, ret)
+
+            # no extension
+            with self.assertRaises(SystemExit):
+                args = ['input.vsd', 'output_without_ext']
+                main(args)
+        finally:
+            sys.path = loadpath  # write back library loading paths
+            sys.modules.pop('win32com', None)  # unload win32com forcely
+
+    @patch("sys.stderr")
     @patch("visio2img.visio2img.export_img")
     def test_main_if_export_img_raises_error(self, export_img, _):
         try:

@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 
+import os
 import sys
-from sys import stderr
-
 from os import path
 from optparse import OptionParser
 from math import log
 
 __all__ = ('export_img')
-
-GEN_IMG_FORMATS = ('.gif', '.jpeg', '.jpg', '.png')
 
 
 def is_pywin32_available():
@@ -58,13 +55,6 @@ def filter_pages(pages, pagenum, pagename):
     return pages
 
 
-def _check_format(gen_img_filename):
-    gen_img_extension = path.splitext(gen_img_filename)[1]
-    if gen_img_extension not in GEN_IMG_FORMATS:
-        errmsg = 'Unsupported image format: %s' % gen_img_filename
-        raise IllegalImageFormatException(errmsg)
-
-
 def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
     """
     export as image format
@@ -74,8 +64,6 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
 
     visio_pathname = path.abspath(visio_filename)
     gen_img_pathname = path.abspath(gen_img_filename)
-
-    _check_format(gen_img_pathname)
 
     if not path.exists(visio_pathname):
         raise FileNotFoundError('visio files not found: %s' % visio_filename)
@@ -117,41 +105,41 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
         visioapp.Quit()
 
 
-def main(args=sys.argv[1:]):
+def parse_options(args):
     parser = OptionParser()
-    parser.add_option(
-        '-p', '--page',
-        action='store',
-        type='int',
-        dest='pagenum',
-        help='transform only one page(set number of this page)'
-    )
-    parser.add_option(
-        '-n', '--name',
-        action='store',
-        type='string',
-        dest='pagename',
-        help='transform only same as setted name page'
-    )
-    (options, argv) = parser.parse_args(args)
+    parser.add_option('-p', '--page', action='store',
+                      type='int', dest='pagenum',
+                      help='pick a page by page number')
+    parser.add_option('-n', '--name', action='store',
+                      type='string', dest='pagename',
+                      help='pick a page by page name')
+    options, argv = parser.parse_args(args)
 
-    if (options.pagenum is not None) and (options.pagename is not None):
-        stderr.write('--page and ---name options are conflicted')
-        return -1
+    if options.pagenum and options.pagename:
+        parser.error('options --page and --name are mutually exclusive')
 
     if len(argv) != 2:
-        parser.print_usage(stderr)
-        return -1
+        parser.print_usage(sys.stderr)
+        parser.exit()
 
+    output_ext = os.path.splitext(argv[1])[1].lower()
+    if output_ext not in ('.gif', '.jpg', '.png'):
+        parser.error('Unsupported image format: %s' % argv[1])
+
+    return options, argv
+
+
+def main(args=sys.argv[1:]):
     if not is_pywin32_available():
-        stderr.write('win32com module not found')
+        sys.stderr.write('win32com module not found')
         return -1
 
     try:
+        options, argv = parse_options(args)
         export_img(argv[0], argv[1], options.pagenum, options.pagename)
         return 0
     except (FileNotFoundError, VisioNotFoundException,
             IllegalImageFormatException, IndexError) as err:
         # expected exception
-        stderr.write(str(err))  # print message
+        sys.stderr.write(str(err))  # print message
         return -1
