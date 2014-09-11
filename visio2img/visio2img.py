@@ -16,28 +16,6 @@ def is_pywin32_available():
         return False
 
 
-class FileNotFoundError(Exception):
-    """
-    exception represents the input file is not found
-    """
-
-
-class IllegalImageFormatException(TypeError):
-    """
-    This exception means Exceptions for Illegal Image Format.
-    """
-
-
-class UnsupportedFileError(Exception):
-    """ exception represens the specified file is not supported """
-
-
-class VisioNotFoundException(Exception):
-    """
-    This excetion means system has no visio program.
-    """
-
-
 def filter_pages(pages, pagenum, pagename):
     """ Choice pages using pagenum and pagename. """
     if pagenum:
@@ -65,24 +43,24 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
     gen_img_pathname = os.path.abspath(gen_img_filename)
 
     if not os.path.exists(visio_pathname):
-        raise FileNotFoundError('visio files not found: %s' % visio_filename)
+        raise IOError('No such visio file: %s', visio_filename)
 
     if not os.path.isdir(os.path.dirname(gen_img_pathname)):
         msg = 'Could not write image file: %s' % gen_img_filename
-        raise FileNotFoundError(msg)
+        raise IOError(msg)
 
     try:
         import win32com.client
         visioapp = win32com.client.Dispatch('Visio.InvisibleApp')
     except:
         msg = 'Visio not found. visio2img requires Visio.'
-        raise VisioNotFoundException(msg)
+        raise OSError(msg)
 
     try:
         visioapp.Documents.Open(visio_pathname)
     except:
         msg = 'Could not open file (already opend by other process?): %s'
-        raise UnsupportedFileError(msg % visio_filename)
+        raise IOError(msg % visio_filename)
 
     try:
         pages = filter_pages(visioapp.ActiveDocument.Pages, pagenum, pagename)
@@ -98,8 +76,7 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
                 img_filename = filename_format % (i + 1)
                 page.Export(img_filename)
     except com_error:
-        raise IllegalImageFormatException(
-            'Could not write image: %d' % gen_img_pathname)
+        raise IOError('Could not write image: %d' % gen_img_pathname)
     finally:
         visioapp.Quit()
 
@@ -137,8 +114,7 @@ def main(args=sys.argv[1:]):
         options, argv = parse_options(args)
         export_img(argv[0], argv[1], options.pagenum, options.pagename)
         return 0
-    except (FileNotFoundError, VisioNotFoundException,
-            IllegalImageFormatException, IndexError) as err:
+    except (IOError, OSError, IndexError) as err:
         # expected exception
         sys.stderr.write(str(err))  # print message
         return -1

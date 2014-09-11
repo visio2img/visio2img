@@ -17,10 +17,6 @@ from visio2img.visio2img import (
     filter_pages,
     export_img,
     main,
-    FileNotFoundError,
-    VisioNotFoundException,
-    IllegalImageFormatException,
-    UnsupportedFileError
 )
 
 EXAMPLE_DIR = os.path.join(os.path.dirname(__file__), 'examples')
@@ -182,18 +178,13 @@ class TestVisio2img(unittest.TestCase):
             sys.modules['win32com'] = True
             args = ['input.vsd', 'output.png']
 
-            # case of FileNotFoundError
-            export_img.side_effect = FileNotFoundError
+            # case of IOError
+            export_img.side_effect = IOError
             ret = main(args)
             self.assertEqual(-1, ret)
 
-            # case of VisioNotFoundException
-            export_img.side_effect = VisioNotFoundException
-            ret = main(args)
-            self.assertEqual(-1, ret)
-
-            # case of IllegalImageFormatException
-            export_img.side_effect = IllegalImageFormatException
+            # case of OSError
+            export_img.side_effect = OSError
             ret = main(args)
             self.assertEqual(-1, ret)
 
@@ -326,13 +317,13 @@ class TestVisio2img(unittest.TestCase):
 
     @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_visio_file_not_found(self):
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaises(IOError):
             export_img('/path/to/notexist.vsd', '/path/to/output.png',
                        None, None)
 
     @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_output_dir_not_found(self):
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaises(IOError):
             export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsd'),
                        '/path/to/output.png', None, None)
 
@@ -344,7 +335,7 @@ class TestVisio2img(unittest.TestCase):
 
         try:
             tmpdir = mkdtemp()
-            with self.assertRaises(VisioNotFoundException):
+            with self.assertRaises(OSError):
                 export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsdx'),
                            os.path.join(tmpdir, 'output.png'), None, None)
         finally:
@@ -354,7 +345,7 @@ class TestVisio2img(unittest.TestCase):
     def test_export_img_with_non_visio_file(self):
         try:
             tmpdir = mkdtemp()
-            with self.assertRaises(UnsupportedFileError):
+            with self.assertRaises(IOError):
                 export_img(__file__,
                            os.path.join(tmpdir, 'output.png'), None, None)
         finally:
