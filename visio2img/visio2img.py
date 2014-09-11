@@ -2,7 +2,6 @@
 
 import os
 import sys
-from os import path
 from optparse import OptionParser
 from math import log
 
@@ -62,13 +61,13 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
     """
     from pywintypes import com_error
 
-    visio_pathname = path.abspath(visio_filename)
-    gen_img_pathname = path.abspath(gen_img_filename)
+    visio_pathname = os.path.abspath(visio_filename)
+    gen_img_pathname = os.path.abspath(gen_img_filename)
 
-    if not path.exists(visio_pathname):
+    if not os.path.exists(visio_pathname):
         raise FileNotFoundError('visio files not found: %s' % visio_filename)
 
-    if not path.isdir(path.dirname(gen_img_pathname)):
+    if not os.path.isdir(os.path.dirname(gen_img_pathname)):
         msg = 'Could not write image file: %s' % gen_img_filename
         raise FileNotFoundError(msg)
 
@@ -92,7 +91,7 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
             pages[0].Export(gen_img_pathname)
         else:
             digits = int(log(len(pages), 10)) + 1
-            basename, ext = path.splitext(gen_img_pathname)
+            basename, ext = os.path.splitext(gen_img_pathname)
             filename_format = "%s%%0%dd%s" % (basename, digits, ext)
 
             for i, page in enumerate(pages):
