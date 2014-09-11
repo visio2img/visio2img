@@ -15,8 +15,8 @@
 
 import os
 import sys
-from optparse import OptionParser
 from math import log
+from optparse import OptionParser
 
 __all__ = ('export_img')
 
@@ -46,19 +46,19 @@ def filter_pages(pages, pagenum, pagename):
     return pages
 
 
-def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
+def export_img(visio_filename, image_filename, pagenum=None, pagename=None):
     """ Exports images from visio file """
     from pywintypes import com_error
 
     # visio requires absolute path
     visio_pathname = os.path.abspath(visio_filename)
-    gen_img_pathname = os.path.abspath(gen_img_filename)
+    image_pathname = os.path.abspath(image_filename)
 
     if not os.path.exists(visio_pathname):
         raise IOError('No such visio file: %s', visio_filename)
 
-    if not os.path.isdir(os.path.dirname(gen_img_pathname)):
-        msg = 'Could not write image file: %s' % gen_img_filename
+    if not os.path.isdir(os.path.dirname(image_pathname)):
+        msg = 'Could not write image file: %s' % image_filename
         raise IOError(msg)
 
     try:
@@ -78,17 +78,17 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
         pages = filter_pages(visioapp.ActiveDocument.Pages, pagenum, pagename)
 
         if len(pages) == 1:
-            pages[0].Export(gen_img_pathname)
+            pages[0].Export(image_pathname)
         else:
             digits = int(log(len(pages), 10)) + 1
-            basename, ext = os.path.splitext(gen_img_pathname)
+            basename, ext = os.path.splitext(image_pathname)
             filename_format = "%s%%0%dd%s" % (basename, digits, ext)
 
             for i, page in enumerate(pages):
-                img_filename = filename_format % (i + 1)
-                page.Export(img_filename)
+                filename = filename_format % (i + 1)
+                page.Export(filename)
     except com_error:
-        raise IOError('Could not write image: %d' % gen_img_pathname)
+        raise IOError('Could not write image: %d' % image_pathname)
     finally:
         visioapp.Quit()
 
