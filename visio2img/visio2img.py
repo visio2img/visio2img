@@ -1,4 +1,17 @@
-#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#  Copyright 2014 Yassu
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
 
 import os
 import sys
@@ -9,6 +22,7 @@ __all__ = ('export_img')
 
 
 def is_pywin32_available():
+    """ Tests pywin32 is installed """
     try:
         import win32com  # NOQA: import test
         return True
@@ -17,7 +31,7 @@ def is_pywin32_available():
 
 
 def filter_pages(pages, pagenum, pagename):
-    """ Choice pages using pagenum and pagename. """
+    """ Choices pages by pagenum and pagename """
     if pagenum:
         try:
             pages = [list(pages)[pagenum - 1]]
@@ -33,12 +47,10 @@ def filter_pages(pages, pagenum, pagename):
 
 
 def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
-    """
-    export as image format
-    If exported page, return True and else return False.
-    """
+    """ Exports images from visio file """
     from pywintypes import com_error
 
+    # visio requires absolute path
     visio_pathname = os.path.abspath(visio_filename)
     gen_img_pathname = os.path.abspath(gen_img_filename)
 
@@ -82,6 +94,7 @@ def export_img(visio_filename, gen_img_filename, pagenum=None, pagename=None):
 
 
 def parse_options(args):
+    """ Parses command line options """
     parser = OptionParser()
     parser.add_option('-p', '--page', action='store',
                       type='int', dest='pagenum',
@@ -106,6 +119,7 @@ def parse_options(args):
 
 
 def main(args=sys.argv[1:]):
+    """ main funcion of visio2img """
     if not is_pywin32_available():
         sys.stderr.write('win32com module not found')
         return -1
@@ -115,6 +129,5 @@ def main(args=sys.argv[1:]):
         export_img(argv[0], argv[1], options.pagenum, options.pagename)
         return 0
     except (IOError, OSError, IndexError) as err:
-        # expected exception
-        sys.stderr.write(str(err))  # print message
+        sys.stderr.write("error: %s" % err)
         return -1
