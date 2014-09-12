@@ -93,7 +93,8 @@ def export_img(visio_filename, image_filename, pagenum=None, pagename=None):
 
 def parse_options(args):
     """ Parses command line options """
-    parser = OptionParser()
+    usage = 'usage: %prog [options] visio_filename image_filename'
+    parser = OptionParser(usage=usage)
     parser.add_option('-p', '--page', action='store',
                       type='int', dest='pagenum',
                       help='pick a page by page number')
