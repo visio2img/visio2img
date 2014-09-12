@@ -30,15 +30,7 @@ setup(
     name='visio2img',
     version='1.0.0',
     description='MS-Visio file (.vsd, .vsdx) to images converter',
-    long_description=(
-        'If you use this program as command in terminal, '
-        'this program provides visio2img.py command.\n'
-        'If you use this program as module of python, '
-        'this module provides visio2img.visio2img.export_img function.\n'
-        'Requirements of this program is '
-        'Visio application and win32com module.\n'
-        'This program is for only python3.'
-    ),
+    long_description=open('README.rst').read(),
     author='Yassu',
     author_email='yassumath@gmail.com',
     maintainer='Takeshi KOMIYA',
