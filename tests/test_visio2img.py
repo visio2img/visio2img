@@ -324,7 +324,7 @@ class TestVisio2img(unittest.TestCase):
 
     def test_export_img_output_dir_not_found(self):
         with self.assertRaises(IOError):
-            export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsd'),
+            export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsdx'),
                        '/path/to/output.png', None, None)
 
     @patch('win32com.client')
