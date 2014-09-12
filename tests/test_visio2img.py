@@ -169,6 +169,7 @@ class TestVisio2img(unittest.TestCase):
         finally:
             sys.path = loadpath  # write back library loading paths
             sys.modules.pop('win32com', None)  # unload win32com forcely
+            sys.modules.pop('win32com.client', None)  # unload win32com.client forcely
 
     @patch("sys.stderr")
     @patch("visio2img.visio2img.export_img")
@@ -200,6 +201,7 @@ class TestVisio2img(unittest.TestCase):
         finally:
             sys.path = loadpath  # write back library loading paths
             sys.modules.pop('win32com', None)  # unload win32com forcely
+            sys.modules.pop('win32com.client', None)  # unload win32com.client forcely
 
     @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_singlepage_to_png(self):
