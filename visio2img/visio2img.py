@@ -69,6 +69,7 @@ def export_img(visio_filename, image_filename, pagenum=None, pagename=None):
     try:
         visioapp.Documents.Open(visio_pathname)
     except:
+        visioapp.Quit()
         msg = 'Could not open file (already opend by other process?): %s'
         raise IOError(msg % visio_filename)
 
