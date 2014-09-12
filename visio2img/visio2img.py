@@ -85,7 +85,7 @@ def export_img(visio_filename, image_filename, pagenum=None, pagename=None):
                 filename = filename_format % (i + 1)
                 page.Export(filename)
     except:
-        raise IOError('Could not write image: %d' % image_pathname)
+        raise IOError('Could not write image: %s' % image_pathname)
     finally:
         visioapp.Quit()
 
