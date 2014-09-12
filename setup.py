@@ -1,6 +1,26 @@
 import sys
 from setuptools import setup
 
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Environment :: Console',
+    'Environment :: Win32 (MS Windows)',
+    'Intended Audience :: System Administrators',
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: Microsoft :: Windows',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.3',
+    'Programming Language :: Python :: 3.4',
+    'Topic :: Documentation',
+    'Topic :: Multimedia :: Graphics :: Graphics Conversion',
+    'Topic :: Office/Business :: Office Suites',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Utilities',
+]
+
 if sys.version_info > (3, 0):
     test_requires = []
 else:
@@ -9,11 +29,7 @@ else:
 setup(
     name='visio2img',
     version='1.0.0',
-    author='Yassu',
-    packages=['visio2img'],
-    description=(
-        'module or software for translation from visio format to'
-        'other general image format.'),
+    description='MS-Visio file (.vsd, .vsdx) to images converter',
     long_description=(
         'If you use this program as command in terminal, '
         'this program provides visio2img.py command.\n'
@@ -23,27 +39,14 @@ setup(
         'Visio application and win32com module.\n'
         'This program is for only python3.'
     ),
-    url='https://github.com/yassu/Visio2Img',
-    classifiers=[
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Development Status :: 4 - Beta',
-        'Environment :: Console',
-        'Topic :: Software Development :: Libraries :: Application Frameworks',
-        'License :: Freeware',
-        'License :: OSI Approved :: Apache Software License',
-        'Intended Audience :: Developers'
-        'Operating System :: Microsoft :: Windows',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Software Development :: Embedded Systems',
-        'Topic :: Office/Business'
-    ],
+    author='Yassu',
     author_email='yassumath@gmail.com',
-    license=(
-        'Released Under the Apache license\n'
-        'https://github.com/yassu/Visio2Img\n'
-    ),
-    test_requires=test_requires,
+    maintainer='Takeshi KOMIYA',
+    maintainer_email='i.tkomiya@gmail.com',
+    url='https://github.com/visio2img/visio2img',
+    classifiers=classifiers,
+    packages=['visio2img'],
+    tests_require=test_requires,
     entry_points="""
        [console_scripts]
        visio2img = visio2img.visio2img:main
