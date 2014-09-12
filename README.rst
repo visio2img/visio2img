@@ -8,6 +8,10 @@ visio2img
    :target: https://travis-ci.org/visio2img/visio2img
    :alt: Build Status
 
+.. image:: https://coveralls.io/repos/visio2img/visio2img/badge.png?branch=master
+   :target: https://coveralls.io/r/visio2img/visio2img?branch=master
+   :alt: Coverage
+
 .. image:: https://pypip.in/v/visio2img/badge.png
    :target: https://pypi.python.org/pypi/visio2img/
    :alt: Latest PyPI version
