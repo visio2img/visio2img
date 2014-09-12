@@ -36,7 +36,7 @@ class TestVisio2img(unittest.TestCase):
     def test_is_pywin32_available(self):
         try:
             loadpath, sys.path = sys.path, []  # disable to load all modules
-            sys.modules.pop('win32com', None)  # unload win32com forcely
+            sys.modules.pop('win32com', None)  # unload forcely
 
             self.assertFalse(is_pywin32_available())
 
@@ -44,7 +44,7 @@ class TestVisio2img(unittest.TestCase):
             self.assertTrue(is_pywin32_available())
         finally:
             sys.path = loadpath  # write back library loading paths
-            sys.modules.pop('win32com', None)  # unload win32com forcely
+            sys.modules.pop('win32com', None)  # unload forcely
 
     def test_filter_pages_by_default(self):
         pages = range(10)
@@ -121,14 +121,14 @@ class TestVisio2img(unittest.TestCase):
             self.assertEqual(3, export_img.call_count)
 
             # two arguments, win32com unavailable
-            sys.modules.pop('win32com', None)  # unload win32com forcely
+            sys.modules.pop('win32com', None)  # unload forcely
             args = ['input.vsd', 'output.png']
             ret = main(args)
             self.assertEqual(-1, ret)
             self.assertEqual(3, export_img.call_count)
         finally:
             sys.path = loadpath  # write back library loading paths
-            sys.modules.pop('win32com', None)  # unload win32com forcely
+            sys.modules.pop('win32com', None)  # unload forcely
 
     @patch("sys.stderr")
     @patch("visio2img.visio2img.export_img")
@@ -168,8 +168,8 @@ class TestVisio2img(unittest.TestCase):
                 main(args)
         finally:
             sys.path = loadpath  # write back library loading paths
-            sys.modules.pop('win32com', None)  # unload win32com forcely
-            sys.modules.pop('win32com.client', None)  # unload win32com.client forcely
+            sys.modules.pop('win32com', None)  # unload forcely
+            sys.modules.pop('win32com.client', None)  # unload forcely
 
     @patch("sys.stderr")
     @patch("visio2img.visio2img.export_img")
@@ -200,8 +200,8 @@ class TestVisio2img(unittest.TestCase):
                 main(args)
         finally:
             sys.path = loadpath  # write back library loading paths
-            sys.modules.pop('win32com', None)  # unload win32com forcely
-            sys.modules.pop('win32com.client', None)  # unload win32com.client forcely
+            sys.modules.pop('win32com', None)  # unload forcely
+            sys.modules.pop('win32com.client', None)  # unload forcely
 
     @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_singlepage_to_png(self):
