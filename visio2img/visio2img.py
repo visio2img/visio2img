@@ -18,8 +18,6 @@ import sys
 from math import log
 from optparse import OptionParser
 
-__all__ = ('export_img')
-
 
 def is_pywin32_available():
     """ Tests pywin32 is installed """
