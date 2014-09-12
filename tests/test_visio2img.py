@@ -317,13 +317,11 @@ class TestVisio2img(unittest.TestCase):
         finally:
             rmtree(tmpdir)
 
-    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_visio_file_not_found(self):
         with self.assertRaises(IOError):
             export_img('/path/to/notexist.vsd', '/path/to/output.png',
                        None, None)
 
-    @unittest.skipIf(VISIO_AVAILABLE is False, "Visio not found")
     def test_export_img_output_dir_not_found(self):
         with self.assertRaises(IOError):
             export_img(os.path.join(EXAMPLE_DIR, 'singlepage.vsd'),
