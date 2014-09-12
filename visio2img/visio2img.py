@@ -48,8 +48,6 @@ def filter_pages(pages, pagenum, pagename):
 
 def export_img(visio_filename, image_filename, pagenum=None, pagename=None):
     """ Exports images from visio file """
-    from pywintypes import com_error
-
     # visio requires absolute path
     visio_pathname = os.path.abspath(visio_filename)
     image_pathname = os.path.abspath(image_filename)
@@ -74,9 +72,8 @@ def export_img(visio_filename, image_filename, pagenum=None, pagename=None):
         msg = 'Could not open file (already opend by other process?): %s'
         raise IOError(msg % visio_filename)
 
+    pages = filter_pages(visioapp.ActiveDocument.Pages, pagenum, pagename)
     try:
-        pages = filter_pages(visioapp.ActiveDocument.Pages, pagenum, pagename)
-
         if len(pages) == 1:
             pages[0].Export(image_pathname)
         else:
@@ -87,7 +84,7 @@ def export_img(visio_filename, image_filename, pagenum=None, pagename=None):
             for i, page in enumerate(pages):
                 filename = filename_format % (i + 1)
                 page.Export(filename)
-    except com_error:
+    except:
         raise IOError('Could not write image: %d' % image_pathname)
     finally:
         visioapp.Quit()
