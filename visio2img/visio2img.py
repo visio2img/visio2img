@@ -46,49 +46,81 @@ def filter_pages(pages, pagenum, pagename):
     return pages
 
 
+class VisioFile(object):
+    @classmethod
+    def Open(cls, filename):
+        obj = cls()
+        obj.open(filename)
+        return obj
+
+    def __init__(self):
+        self.app = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
+        return False
+
+    def open(self, filename):
+        assert self.app is None
+
+        visio_pathname = os.path.abspath(filename)  # visio requires abspath
+        if not os.path.exists(visio_pathname):
+            raise IOError('No such visio file: %s', filename)
+
+        try:
+            import win32com.client
+            self.app = win32com.client.Dispatch('Visio.InvisibleApp')
+        except:
+            msg = 'Visio not found. visio2img requires Visio.'
+            raise OSError(msg)
+
+        try:
+            self.app.Documents.Open(visio_pathname)
+        except:
+            self.close()
+            msg = 'Could not open file (already opend by other process?): %s'
+            raise IOError(msg % filename)
+
+    def close(self):
+        if self.app:
+            self.app.Quit()
+            self.app = None
+
+    @property
+    def pages(self):
+        if self.app:
+            return self.app.ActiveDocument.Pages
+        else:
+            return []
+
+
 def export_img(visio_filename, image_filename, pagenum=None, pagename=None):
     """ Exports images from visio file """
     # visio requires absolute path
-    visio_pathname = os.path.abspath(visio_filename)
     image_pathname = os.path.abspath(image_filename)
-
-    if not os.path.exists(visio_pathname):
-        raise IOError('No such visio file: %s', visio_filename)
 
     if not os.path.isdir(os.path.dirname(image_pathname)):
         msg = 'Could not write image file: %s' % image_filename
         raise IOError(msg)
 
-    try:
-        import win32com.client
-        visioapp = win32com.client.Dispatch('Visio.InvisibleApp')
-    except:
-        msg = 'Visio not found. visio2img requires Visio.'
-        raise OSError(msg)
+    with VisioFile.Open(visio_filename) as visio:
+        pages = filter_pages(visio.pages, pagenum, pagename)
+        try:
+            if len(pages) == 1:
+                pages[0].Export(image_pathname)
+            else:
+                digits = int(log(len(pages), 10)) + 1
+                basename, ext = os.path.splitext(image_pathname)
+                filename_format = "%s%%0%dd%s" % (basename, digits, ext)
 
-    try:
-        visioapp.Documents.Open(visio_pathname)
-    except:
-        visioapp.Quit()
-        msg = 'Could not open file (already opend by other process?): %s'
-        raise IOError(msg % visio_filename)
-
-    pages = filter_pages(visioapp.ActiveDocument.Pages, pagenum, pagename)
-    try:
-        if len(pages) == 1:
-            pages[0].Export(image_pathname)
-        else:
-            digits = int(log(len(pages), 10)) + 1
-            basename, ext = os.path.splitext(image_pathname)
-            filename_format = "%s%%0%dd%s" % (basename, digits, ext)
-
-            for i, page in enumerate(pages):
-                filename = filename_format % (i + 1)
-                page.Export(filename)
-    except:
-        raise IOError('Could not write image: %s' % image_pathname)
-    finally:
-        visioapp.Quit()
+                for i, page in enumerate(pages):
+                    filename = filename_format % (i + 1)
+                    page.Export(filename)
+        except:
+            raise IOError('Could not write image: %s' % image_pathname)
 
 
 def parse_options(args):
