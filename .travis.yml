@@ -6,9 +6,5 @@ env:
     - TOXENV=py27
     - TOXENV=py33
     - TOXENV=py34
-install:
-  - pip install docutils tox
-  - if test "$TOXENV" = coverage ; then pip install python-coveralls ; fi
+install: pip install docutils tox
 script: tox
-after_success:
-  - if test "$TOXENV" = coverage ; then coveralls ; fi
