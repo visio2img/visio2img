@@ -70,7 +70,7 @@ For example, this command-line picks up a page named "circle"::
 Author
 =======
 
-Yassu <yassumath@gmail.com>
+Yassu <mathyassu@gmail.com>
 
 Maintainer
 ===========
