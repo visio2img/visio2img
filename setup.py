@@ -32,7 +32,7 @@ setup(
     description='MS-Visio file (.vsd, .vsdx) to images converter',
     long_description=open('README.rst').read(),
     author='Yassu',
-    author_email='yassumath@gmail.com',
+    author_email='mathyassu@gmail.com',
     maintainer='Takeshi KOMIYA',
     maintainer_email='i.tkomiya@gmail.com',
     url='https://github.com/visio2img/visio2img',
