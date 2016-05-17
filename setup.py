@@ -28,7 +28,7 @@ else:
 
 setup(
     name='visio2img',
-    version='1.2.0',
+    version='1.3.0',
     description='MS-Visio file (.vsd, .vsdx) to images converter',
     long_description=open('README.rst').read(),
     author='Yassu',
