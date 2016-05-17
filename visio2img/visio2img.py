@@ -76,7 +76,16 @@ class VisioFile(object):
             raise OSError(msg)
 
         try:
-            self.app.Documents.Open(visio_pathname)
+            if hasattr(self.app.Documents, "OpenEx"):
+                # Visio >= 4.5 supports OpenEx
+                # visOpenCopy + visOpenRO allows opening documents even
+                # if they're open in another visio instance...
+                visOpenCopy = 0x1
+                visOpenRO = 0x2
+                open_flags = visOpenCopy | visOpenRO
+                self.app.Documents.OpenEx(visio_pathname, open_flags)
+            else:
+                self.app.Documents.Open(visio_pathname)
         except:
             self.close()
             msg = 'Could not open file (already opend by other process?): %s'
