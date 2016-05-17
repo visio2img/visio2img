@@ -32,11 +32,10 @@ Requirements
 Setup
 =====
 
-Install `visio2img` package.
+1. Install pywin32_ manually
+2. Install `visio2img` package::
 
-::
-
-   $ pip install visio2img
+     $ pip install visio2img
 
 And then, `visio2img` command is available on your environment.
 
