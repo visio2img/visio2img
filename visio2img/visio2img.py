@@ -150,7 +150,7 @@ def parse_options(args):
         parser.exit()
 
     output_ext = os.path.splitext(argv[1])[1].lower()
-    if output_ext not in ('.gif', '.jpg', '.png'):
+    if output_ext not in ('.gif', '.jpg', '.png', '.svg', '.svgz'):
         parser.error('Unsupported image format: %s' % argv[1])
 
     return options, argv

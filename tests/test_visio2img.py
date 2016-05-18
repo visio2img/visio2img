@@ -152,6 +152,16 @@ class TestVisio2img(unittest.TestCase):
             ret = main(args)
             self.assertEqual(0, ret)
 
+            # .svg
+            args = ['input.vsd', 'output.svg']
+            ret = main(args)
+            self.assertEqual(0, ret)
+
+            # .svgz
+            args = ['input.vsd', 'output.svgz']
+            ret = main(args)
+            self.assertEqual(0, ret)
+
             # .pdf
             with self.assertRaises(SystemExit):
                 args = ['input.vsd', 'output.pdf']
