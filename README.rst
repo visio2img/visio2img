@@ -12,11 +12,11 @@ visio2img
    :target: https://coveralls.io/r/visio2img/visio2img?branch=master
    :alt: Coverage
 
-.. image:: https://pypip.in/v/visio2img/badge.png
+.. image:: https://img.shields.io/pypi/v/visio2img.svg
    :target: https://pypi.python.org/pypi/visio2img/
    :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/visio2img/badge.png
+.. image:: https://img.shields.io/pypi/dm/visio2img.svg
    :target: https://pypi.python.org/pypi/visio2img/
    :alt: Number of PyPI downloads
 
