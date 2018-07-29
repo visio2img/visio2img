@@ -28,7 +28,7 @@ if is_pywin32_available():
         app = win32com.client.Dispatch('Visio.InvisibleApp')
         app.Quit()
         VISIO_AVAILABLE = True
-    except:
+    except Exception:
         pass
 
 

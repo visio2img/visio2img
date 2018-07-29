@@ -71,7 +71,7 @@ class VisioFile(object):
         try:
             import win32com.client
             self.app = win32com.client.Dispatch('Visio.InvisibleApp')
-        except:
+        except Exception:
             msg = 'Visio not found. visio2img requires Visio.'
             raise OSError(msg)
 
@@ -86,7 +86,7 @@ class VisioFile(object):
                 self.app.Documents.OpenEx(visio_pathname, open_flags)
             else:
                 self.app.Documents.Open(visio_pathname)
-        except:
+        except Exception:
             self.close()
             msg = 'Could not open file (already opend by other process?): %s'
             raise IOError(msg % filename)
@@ -126,7 +126,7 @@ def export_img(visio_filename, image_filename, pagenum=None, pagename=None):
                 for i, page in enumerate(pages):
                     filename = filename_format % (i + 1)
                     page.Export(filename)
-        except:
+        except Exception:
             raise IOError('Could not write image: %s' % image_pathname)
 
 
